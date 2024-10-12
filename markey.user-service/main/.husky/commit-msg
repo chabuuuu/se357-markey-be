@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+cd ./markey.user-service/main
+
+npx --no-install commitlint --edit
