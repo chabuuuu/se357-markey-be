@@ -16,4 +16,6 @@ export class ProductController {
     this.productService = productService;
     this.common = common;
   }
+
+  async create(req: Request, res: Response, next: NextFunction) {}
 }
