@@ -19,7 +19,7 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check ./src",
     "prettier:fix": "prettier --write ./src",
-    "prepare": "cd ../../ && husky markey.shopping-service/main/.husky",
+    "prepare": "cd .. && husky main/.husky",
     "create:module": "ts-node ./src/utils/tools/auto-generate-module.ts"
   },
   "keywords": [],
@@ -33,7 +33,6 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.24",
-    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^8.57.0",
@@ -59,15 +58,12 @@
     "helmet": "^7.1.0",
     "inversify": "^6.0.2",
     "jsonwebtoken": "^9.0.2",
-    "moment": "^2.30.1",
-    "moment-timezone": "^0.5.45",
-    "mongodb": "^5.9.2",
-    "mongoose": "^8.7.0",
+    "moment-timezone": "^0.5.46",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.0",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.2.1",
     "response-formater": "^1.0.2",
-    "uuid": "^10.0.0"
+    "typeorm": "^0.3.20"
   }
 }

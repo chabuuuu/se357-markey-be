@@ -1,0 +1,23 @@
+import { create } from 'domain';
+
+export const ListProductSelect = {
+  id: true,
+  name: true,
+  price: true,
+  description: true,
+  category: {
+    id: true,
+    name: true
+  },
+  shop: {
+    id: true,
+    name: true
+  }
+
+  //BaseEntity
+  // createAt: true,
+  // updateAt: true,
+  // createBy: true,
+  // updateBy: true,
+  // deleteAt: true
+};

@@ -1,3 +1,4 @@
 import { IBaseCrudService } from '@/service/interface/i.base.service';
+import { BaseModelType } from '@/types/base-model.types';
 
-export interface IShoppingCartService<T> extends IBaseCrudService<T> {}
+export interface IShoppingCartService<T extends BaseModelType> extends IBaseCrudService<T> {}

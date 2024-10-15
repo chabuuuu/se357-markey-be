@@ -32,6 +32,6 @@
     "enable": false
   },
   "database": {
-    "sync": true
+    "sync": false
   }
 }

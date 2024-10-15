@@ -1,10 +1,5 @@
-import { ICategory } from '@/models/category.model';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-
-type Category = {
-  id: string;
-};
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateProductReq {
   @IsNotEmpty()
@@ -25,20 +20,22 @@ export class CreateProductReq {
   @Expose()
   quantity!: number;
 
+  @IsArray()
+  @IsOptional()
+  @Expose()
+  picture?: string[];
+
+  @IsOptional()
+  @Expose()
+  detail?: Record<string, string>;
+
+  @Expose()
+  @IsArray()
+  @IsOptional()
+  tags?: string[];
+
+  @Expose()
+  @IsNotEmpty()
   @IsString()
-  @IsOptional()
-  @Expose()
-  picture?: string;
-
-  @IsOptional()
-  @Expose()
-  detail!: any;
-
-  @Expose()
-  tags!: string[];
-
-  //fk
-
-  @Expose()
-  category!: Category;
+  categoryId!: string;
 }

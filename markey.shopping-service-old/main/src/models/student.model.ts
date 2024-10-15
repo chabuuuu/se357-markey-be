@@ -2,6 +2,7 @@ import { Schema, model, Document, Model } from 'mongoose';
 
 // Define an interface representing a document in MongoDB.
 export interface IStudent extends Document {
+  _id: Schema.Types.ObjectId;
   name: string;
   age: number;
   email: string;

@@ -10,17 +10,17 @@ function pascalToCamelCase(str: string): string {
 }
 
 function createService() {
-  return `import { I${ModuleInPascal} } from '@/models/${module_in_snake_case}.model';
+  return `import { ${ModuleInPascal} } from '@/models/${module_in_snake_case}.model';
 import { I${ModuleInPascal}Repository } from '@/repository/interface/i.${module_in_snake_case}.repository';
 import { BaseCrudService } from '@/service/base/base.service';
 import { I${ModuleInPascal}Service } from '@/service/interface/i.${module_in_snake_case}.service';
 import { inject, injectable } from 'inversify';
 
 @injectable()
-export class ${ModuleInPascal}Service extends BaseCrudService<I${ModuleInPascal}> implements I${ModuleInPascal}Service<I${ModuleInPascal}> {
-private ${moduleInCamelCase}Repository: I${ModuleInPascal}Repository<I${ModuleInPascal}>;
+export class ${ModuleInPascal}Service extends BaseCrudService<${ModuleInPascal}> implements I${ModuleInPascal}Service<${ModuleInPascal}> {
+private ${moduleInCamelCase}Repository: I${ModuleInPascal}Repository<${ModuleInPascal}>;
 
-constructor(@inject('${ModuleInPascal}Repository') ${moduleInCamelCase}Repository: I${ModuleInPascal}Repository<I${ModuleInPascal}>) {
+constructor(@inject('${ModuleInPascal}Repository') ${moduleInCamelCase}Repository: I${ModuleInPascal}Repository<${ModuleInPascal}>) {
 super(${moduleInCamelCase}Repository);
 this.${moduleInCamelCase}Repository = ${moduleInCamelCase}Repository;
 }
@@ -30,22 +30,25 @@ this.${moduleInCamelCase}Repository = ${moduleInCamelCase}Repository;
 
 function createIService() {
   return `import { IBaseCrudService } from '@/service/interface/i.base.service';
+import { BaseModelType } from '@/types/base-model.types';
 
-export interface I${ModuleInPascal}Service<T> extends IBaseCrudService<T> {}
+export interface I${ModuleInPascal}Service<T extends BaseModelType> extends IBaseCrudService<T> {}
 `;
 }
 
 function createRepository() {
-  return `
+  return `import { ${ModuleInPascal} } from '@/models/${module_in_snake_case}.model';
 import { BaseRepository } from '@/repository/base/base.repository';
 import { I${ModuleInPascal}Repository } from '@/repository/interface/i.${module_in_snake_case}.repository';
-import ${ModuleInPascal}, { I${ModuleInPascal} } from '@/models/${module_in_snake_case}.model';
+import { ITYPES } from '@/types/interface.types';
+import { inject } from 'inversify';
 import 'reflect-metadata';
+import { DataSource } from 'typeorm';
 
-export class ${ModuleInPascal}Repository extends BaseRepository<I${ModuleInPascal}> implements I${ModuleInPascal}Repository<I${ModuleInPascal}> {
-  constructor() {
-    super(${ModuleInPascal});
-  }
+export class ${ModuleInPascal}Repository extends BaseRepository<${ModuleInPascal}> implements I${ModuleInPascal}Repository<${ModuleInPascal}> {
+constructor(@inject(ITYPES.Datasource) dataSource: DataSource) {
+super(dataSource.getRepository(${ModuleInPascal}));
+}
 }
 `;
 }
@@ -59,7 +62,7 @@ export interface I${ModuleInPascal}Repository<T> extends IBaseRepository<T> {}
 
 function createController() {
   return `import { IBaseCrudController } from '@/controller/interfaces/i.base-curd.controller';
-import { I${ModuleInPascal} } from '@/models/${module_in_snake_case}.model';
+import { ${ModuleInPascal} } from '@/models/${module_in_snake_case}.model';
 import { I${ModuleInPascal}Service } from '@/service/interface/i.${module_in_snake_case}.service';
 import { ITYPES } from '@/types/interface.types';
 import { NextFunction, Request, Response } from 'express';
@@ -67,11 +70,11 @@ import { inject, injectable } from 'inversify';
 
 @injectable()
 export class ${ModuleInPascal}Controller {
-public common: IBaseCrudController<I${ModuleInPascal}>;
-private ${moduleInCamelCase}Service: I${ModuleInPascal}Service<I${ModuleInPascal}>;
+public common: IBaseCrudController<${ModuleInPascal}>;
+private ${moduleInCamelCase}Service: I${ModuleInPascal}Service<${ModuleInPascal}>;
 constructor(
-@inject('${ModuleInPascal}Service') ${moduleInCamelCase}Service: I${ModuleInPascal}Service<I${ModuleInPascal}>,
-@inject(ITYPES.Controller) common: IBaseCrudController<I${ModuleInPascal}>
+@inject('${ModuleInPascal}Service') ${moduleInCamelCase}Service: I${ModuleInPascal}Service<${ModuleInPascal}>,
+@inject(ITYPES.Controller) common: IBaseCrudController<${ModuleInPascal}>
 ) {
 this.${moduleInCamelCase}Service = ${moduleInCamelCase}Service;
 this.common = common;
@@ -84,7 +87,7 @@ function createContainer() {
   return `
 import { ${ModuleInPascal}Controller } from '@/controller/${module_in_snake_case}.controller';
 import { ${ModuleInPascal}Service } from '@/service/${module_in_snake_case}.service';
-import ${ModuleInPascal}, { I${ModuleInPascal} } from '@/models/${module_in_snake_case}.model';
+import { ${ModuleInPascal} } from '@/models/${module_in_snake_case}.model';
 import { ${ModuleInPascal}Repository } from '@/repository/${module_in_snake_case}.repository';
 import { I${ModuleInPascal}Service } from '@/service/interface/i.${module_in_snake_case}.service';
 import { I${ModuleInPascal}Repository } from '@/repository/interface/i.${module_in_snake_case}.repository';
@@ -93,8 +96,8 @@ import { BaseContainer } from '@/container/base.container';
 class ${ModuleInPascal}Container extends BaseContainer {
   constructor() {
     super(${ModuleInPascal});
-this.container.bind<I${ModuleInPascal}Service<I${ModuleInPascal}>>('${ModuleInPascal}Service').to(${ModuleInPascal}Service);
-this.container.bind<I${ModuleInPascal}Repository<I${ModuleInPascal}>>('${ModuleInPascal}Repository').to(${ModuleInPascal}Repository);
+this.container.bind<I${ModuleInPascal}Service<${ModuleInPascal}>>('${ModuleInPascal}Service').to(${ModuleInPascal}Service);
+this.container.bind<I${ModuleInPascal}Repository<${ModuleInPascal}>>('${ModuleInPascal}Repository').to(${ModuleInPascal}Repository);
 this.container.bind<${ModuleInPascal}Controller>(${ModuleInPascal}Controller).toSelf();
 }
 

@@ -3,7 +3,7 @@
     "limit": "100kb"
   },
   "server": {
-    "port": 4001,
+    "port": 4000,
     "host": "localhost",
     "api_version": "/api/v1"
   },
