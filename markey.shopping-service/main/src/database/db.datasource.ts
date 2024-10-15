@@ -1,17 +1,35 @@
 import 'dotenv/config';
+import { Account } from '../models/account.model';
+import { Role } from '../models/role.model';
 import 'reflect-metadata';
-import mongoose, { Mongoose } from 'mongoose';
+import { DataSource } from 'typeorm';
+import { BaseEntity } from '@/models/base_model.model';
+import { CartItem } from '@/models/cart_item.model';
+import { Category } from '@/models/category.model';
+import { Product } from '@/models/product.model';
+import { ShoppingCart } from '@/models/shopping_cart.model';
+import { Shop } from '@/models/shop.model';
 
-const mongoConnectString = process.env.MONGO_CONNECT_STRING || 'mongodb://127.0.0.1:27017/test';
-
+const models = [Account, Role, BaseEntity, CartItem, Category, Product, ShoppingCart, Shop];
 export class AppDataSourceSingleton {
-  private static instance: Mongoose;
+  private static instance: DataSource;
 
   private constructor() {}
 
-  public static async getInstance(): Promise<Mongoose> {
+  public static getInstance(): DataSource {
     if (!AppDataSourceSingleton.instance) {
-      AppDataSourceSingleton.instance = await mongoose.connect(mongoConnectString);
+      AppDataSourceSingleton.instance = new DataSource({
+        type: 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        port: Number(process.env.DB_PORT) || 5432,
+        username: process.env.DB_USERNAME || 'postgres',
+        password: process.env.DB_PASSWORD || 'admin',
+        database: process.env.DB_NAME || 'test',
+        entities: models,
+        synchronize: true,
+        logging: true,
+        migrations: [__dirname + '/migrations/*.js']
+      });
     }
     return AppDataSourceSingleton.instance;
   }

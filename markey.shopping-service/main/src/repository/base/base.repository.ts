@@ -7,74 +7,69 @@ import { RecordOrderType } from '@/types/record-order.types';
 import { UpdateResultType } from '@/types/update-result.types';
 import BaseError from '@/utils/error/base.error';
 import { inject, injectable } from 'inversify';
-import { Model } from 'mongoose';
 import 'reflect-metadata';
+import { DeepPartial, IsNull, ObjectLiteral, Repository } from 'typeorm';
 
 @injectable()
-export class BaseRepository<T> implements IBaseRepository<T> {
-  protected ormRepository!: Model<T>;
+export class BaseRepository<T extends ObjectLiteral> implements IBaseRepository<T> {
+  protected ormRepository!: Repository<T>;
 
   constructor(
     @inject(ITYPES.OrmRepository)
-    ormRepository: Model<T>
+    ormRepository: Repository<T>
   ) {
     this.ormRepository = ormRepository;
   }
 
-  async create(payload: { data: Partial<T> }): Promise<T> {
+  async create(payload: { data: DeepPartial<T> }): Promise<T> {
     const data = payload.data;
-    const result = await this.ormRepository.create(data);
+    const result = await this.ormRepository.save(data);
     return result;
   }
 
   async findOneAndDelete(options: { filter: Partial<T> }): Promise<void> {
     const { filter } = options;
-    const recordToDelete = await this.ormRepository.findOne(filter);
+    const recordToDelete = await this.ormRepository.findOne({
+      where: filter
+    });
     if (!recordToDelete) {
       throw new BaseError(ErrorCode.NF_01, 'Record not found with given filter: ' + JSON.stringify(filter));
     }
     (recordToDelete as any).deleteAt = new Date();
-    await recordToDelete.save();
+    await this.ormRepository.save(recordToDelete);
   }
 
   async findOneAndUpdate(options: { filter: Partial<T>; updateData: Partial<T> }): Promise<void> {
     const { filter, updateData } = options;
 
-    if (filter && !(filter as any).deleteAt) {
-      (filter as any).deleteAt = null;
+    if (filter && !filter.deleteAt) {
+      (filter as any).deleteAt = IsNull();
     }
 
-    const recordToUpdate = await this.ormRepository.findOne(filter);
+    const recordToUpdate = await this.ormRepository.findOne({
+      where: filter
+    });
 
     if (!recordToUpdate) {
       throw new BaseError(ErrorCode.NF_01, 'Record not found with given filter: ' + JSON.stringify(filter));
     }
-    await this.ormRepository.updateOne(filter, updateData);
+
+    const primaryKey = await this.ormRepository.getId(recordToUpdate);
+
+    await this.ormRepository.update(primaryKey, updateData);
   }
 
-  async findOne(options: { filter: Partial<T>; relations?: string[]; select?: string[] }): Promise<T | null> {
-    const { filter, relations, select } = options;
+  async findOne(options: { filter: Partial<T>; relations?: string[] }): Promise<T | null> {
+    const { filter, relations } = options;
 
-    if (!(filter as unknown as any).deleteAt) {
-      (filter as any).deleteAt = null;
-    }
-    let result = null;
-
-    let selectInString = undefined;
-
-    if (select) {
-      select.push('-_id');
-      selectInString = select.join(' ');
-    } else {
-      selectInString = '-_id';
+    if (!filter.deleteAt) {
+      (filter as any).deleteAt = IsNull();
     }
 
-    if (relations) {
-      result = await this.ormRepository.findOne(filter, selectInString).populate(relations);
-    } else {
-      result = await this.ormRepository.findOne(filter, selectInString);
-    }
-
+    const result = await this.ormRepository.findOne({
+      where: filter,
+      relations: relations
+    });
     if (!result) {
       throw new BaseError(ErrorCode.NF_01, 'Record not found with given filter: ' + JSON.stringify(filter));
     }
@@ -86,9 +81,8 @@ export class BaseRepository<T> implements IBaseRepository<T> {
     paging?: PagingDto;
     order?: RecordOrderType[];
     relations?: string[];
-    select?: string[];
   }): Promise<T[]> {
-    const { paging, order, relations, select } = options;
+    const { paging, order, relations } = options;
     let { filter } = options;
 
     let skip = undefined;
@@ -98,75 +92,69 @@ export class BaseRepository<T> implements IBaseRepository<T> {
       take = paging.rpp;
     }
 
-    if (filter && !(filter as unknown as any).deleteAt) {
-      (filter as any).deleteAt = null;
+    if (filter && !filter.deleteAt) {
+      (filter as any).deleteAt = IsNull();
     }
 
     if (!filter) {
       (filter as any) = {
-        deleteAt: null
+        deleteAt: IsNull()
       };
     }
 
-    const orderObject: Record<string, 'asc' | 'desc'> = {};
+    const orderObject: Record<string, 'ASC' | 'DESC'> = {};
     if (order) {
       order.forEach((o) => {
         orderObject[o.column] = o.direction;
       });
     }
-
-    let selectInString = undefined;
-
-    if (select) {
-      select.push('-_id');
-      selectInString = select.join(' ');
-    } else {
-      selectInString = '-_id';
-    }
-
-    const result = await this.ormRepository.find(filter as any, selectInString, {
-      skip: skip,
+    const result = await this.ormRepository.find({
+      where: filter,
       take: take,
-      sort: orderObject,
-      populate: relations
+      skip: skip,
+      order: orderObject as any,
+      relations: relations
     });
     return result;
   }
 
   async findAll(): Promise<T[]> {
-    const selectInString = '-_id';
     const filter: Partial<T> = {};
-    (filter as any).deleteAt = null;
+    (filter as any).deleteAt = IsNull();
 
-    return await this.ormRepository.find(filter, selectInString);
+    return await this.ormRepository.find({
+      where: filter
+    });
   }
 
   async count(options: { filter?: Partial<T> }): Promise<number> {
     const { filter } = options;
 
-    if (filter && !(filter as unknown as any).deleteAt) {
-      (filter as any).deleteAt = null;
+    if (filter && !filter.deleteAt) {
+      (filter as any).deleteAt = IsNull();
     }
 
     if (!filter) {
       (filter as any) = {
-        deleteAt: null
+        deleteAt: IsNull()
       };
     }
 
     console.log('count filter', filter);
 
-    return await this.ormRepository.countDocuments(filter);
+    return await this.ormRepository.count({
+      where: filter
+    });
   }
 
   async exists(options: { filter: Partial<T> }): Promise<boolean> {
     const { filter } = options;
 
-    if (filter && !(filter as unknown as any).deleteAt) {
-      (filter as any).deleteAt = null;
+    if (filter && !filter.deleteAt) {
+      (filter as any).deleteAt = IsNull();
     }
 
-    const total = await this.ormRepository.countDocuments({
+    const total = await this.ormRepository.count({
       where: filter
     });
     return total > 0;

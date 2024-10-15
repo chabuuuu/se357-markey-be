@@ -1,26 +1,44 @@
 import { BaseCrudController } from '@/controller/base/base-crud.controller';
 import { IBaseCrudController } from '@/controller/interfaces/i.base-curd.controller';
+import { AppDataSourceSingleton } from '@/database/db.datasource';
 import { BaseRepository } from '@/repository/base/base.repository';
 import { IBaseRepository } from '@/repository/interface/i.base.repository';
 import { BaseCrudService } from '@/service/base/base.service';
 import { IBaseCrudService } from '@/service/interface/i.base.service';
 import { ITYPES } from '@/types/interface.types';
 import { Container } from 'inversify';
-import { Model } from 'mongoose';
+import { DataSource, Repository } from 'typeorm';
 
 export class BaseContainer {
   protected container!: Container;
   protected baseController!: IBaseCrudController<any>;
   protected model: any;
   constructor(model: any) {
+    this.model = model;
     this.container = new Container();
+    this.baseController = BaseContainer.get(this.model).controller;
+    this.container.bind<DataSource>(ITYPES.Datasource).toConstantValue(AppDataSourceSingleton.getInstance());
+    this.container.bind<IBaseCrudController<any>>(ITYPES.Controller).toConstantValue(this.baseController);
+  }
 
-    this.container.bind<Model<any>>(ITYPES.OrmRepository).toConstantValue(model);
+  static get(model: any) {
+    const container = new Container();
 
-    this.container.bind<IBaseRepository<any>>(ITYPES.Repository).to(BaseRepository<any>);
+    container.bind<DataSource>(ITYPES.Datasource).toConstantValue(AppDataSourceSingleton.getInstance());
 
-    this.container.bind<IBaseCrudService<any>>(ITYPES.Service).to(BaseCrudService<any>);
+    container
+      .bind<Repository<typeof model>>(ITYPES.OrmRepository)
+      .toConstantValue(AppDataSourceSingleton.getInstance().getRepository(model));
 
-    this.container.bind<IBaseCrudController<any>>(ITYPES.Controller).to(BaseCrudController<any>);
+    container.bind<IBaseRepository<typeof model>>(ITYPES.Repository).to(BaseRepository<typeof model>);
+
+    container.bind<IBaseCrudService<typeof model>>(ITYPES.Service).to(BaseCrudService<typeof model>);
+
+    container.bind<IBaseCrudController<typeof model>>('BaseCrudController').to(BaseCrudController<typeof model>);
+
+    return {
+      controller: container.get<BaseCrudController<typeof model>>('BaseCrudController'),
+      service: container.get<IBaseCrudService<typeof model>>(ITYPES.Service)
+    };
   }
 }

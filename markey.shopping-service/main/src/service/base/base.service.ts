@@ -7,13 +7,14 @@ import { Page } from '@/types/page.types';
 import { RecordOrderType } from '@/types/record-order.types';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
+import { DeepPartial } from 'typeorm';
 @injectable()
 export class BaseCrudService<MODEL> implements IBaseCrudService<MODEL> {
   protected baseRepository: IBaseRepository<MODEL>;
   constructor(@inject(ITYPES.Repository) baseRepository: IBaseRepository<MODEL>) {
     this.baseRepository = baseRepository;
   }
-  async create<DTO>(payload: { data: Partial<MODEL> }): Promise<MODEL> {
+  async create<DTO>(payload: { data: DeepPartial<MODEL> }): Promise<MODEL> {
     console.log('payload', payload);
 
     return await this.baseRepository.create({
@@ -39,12 +40,11 @@ export class BaseCrudService<MODEL> implements IBaseCrudService<MODEL> {
     paging?: PagingDto;
     order?: RecordOrderType[];
     relations?: string[];
-    select?: string[];
   }): Promise<MODEL[]> {
     return await this.baseRepository.findMany(options);
   }
 
-  async findOne(options: { filter: Partial<MODEL>; relations?: string[]; select?: string[] }): Promise<MODEL | null> {
+  async findOne(options: { filter: Partial<MODEL>; relations?: string[] }): Promise<MODEL | null> {
     return await this.baseRepository.findOne(options);
   }
   async findAllWithPagingAndOrder(options: {
@@ -65,7 +65,7 @@ export class BaseCrudService<MODEL> implements IBaseCrudService<MODEL> {
     };
   }
 
-  async findAllWithPaging(options: { paging: PagingDto; select?: string[] }): Promise<PagingResponseDto<MODEL>> {
+  async findAllWithPaging(options: { paging: PagingDto }): Promise<PagingResponseDto<MODEL>> {
     const contents = await this.baseRepository.findMany({
       paging: options.paging
     });

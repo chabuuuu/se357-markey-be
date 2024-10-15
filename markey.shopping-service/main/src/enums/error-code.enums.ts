@@ -33,6 +33,5 @@ export enum ErrorCode {
   /**
    * API Not Exists
    */
-  API_NOT_EXISTS = 'API_NOT_EXISTS',
-  GENERAL = 'GENERAL'
+  API_NOT_EXISTS = 'API_NOT_EXISTS'
 }

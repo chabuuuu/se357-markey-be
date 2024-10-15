@@ -1,33 +1,23 @@
-import { Schema, model, Document, Model, Types } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import { Product } from '@/models/product.model';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
-// Define an interface representing a document in MongoDB.
-export interface ICategory extends Document {
-  id: string;
-  name: string;
-  picture: string;
+@Entity('categories')
+export class Category extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
-  createAt: Date;
-  updateAt: Date;
-  deleteAt: Date;
-  createBy: string;
-  updateBy: string;
+  @Column({
+    type: 'varchar',
+    length: 100,
+    nullable: false
+  })
+  name!: string;
+
+  @Column({
+    type: 'text'
+  })
+  picture?: string;
+
+  @OneToMany(() => Product, (product) => product.category)
+  products!: Promise<Product[]>;
 }
-
-// Create a Schema corresponding to the document interface.
-const categorySchema = new Schema<ICategory>({
-  id: { type: String, default: uuidv4 },
-  name: { type: String, required: true, unique: true },
-  picture: { type: String, required: false },
-
-  createAt: { type: Date, default: Date.now() },
-  updateAt: { type: Date, default: Date.now() },
-  deleteAt: { type: Date, default: null },
-  createBy: { type: String, required: false },
-  updateBy: { type: String, required: false }
-});
-
-// Create a Model.
-const Category = model<ICategory>('Category', categorySchema);
-
-export default Category;

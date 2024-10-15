@@ -50,6 +50,7 @@ app.use(endRequestPipelineMiddleware);
  * Server
  */
 AppDataSourceSingleton.getInstance()
+  .initialize()
   .then(async () => {
     console.log(chalk.green('Database connected'));
     const port = GlobalConfig.server.port || 3000;
