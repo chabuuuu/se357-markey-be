@@ -9,6 +9,7 @@ import { Category } from '@/models/category.model';
 import { Product } from '@/models/product.model';
 import { ShoppingCart } from '@/models/shopping_cart.model';
 import { Shop } from '@/models/shop.model';
+import { GlobalConfig } from '@/utils/config/global-config.util';
 
 const models = [Account, Role, BaseEntity, CartItem, Category, Product, ShoppingCart, Shop];
 export class AppDataSourceSingleton {
@@ -26,7 +27,7 @@ export class AppDataSourceSingleton {
         password: process.env.DB_PASSWORD || 'admin',
         database: process.env.DB_NAME || 'test',
         entities: models,
-        synchronize: true,
+        synchronize: GlobalConfig.database.sync,
         logging: true,
         migrations: [__dirname + '/migrations/*.js']
       });

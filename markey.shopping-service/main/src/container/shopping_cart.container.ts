@@ -9,16 +9,16 @@ import { BaseContainer } from '@/container/base.container';
 class ShoppingCartContainer extends BaseContainer {
   constructor() {
     super(ShoppingCart);
-this.container.bind<IShoppingCartService<ShoppingCart>>('ShoppingCartService').to(ShoppingCartService);
-this.container.bind<IShoppingCartRepository<ShoppingCart>>('ShoppingCartRepository').to(ShoppingCartRepository);
-this.container.bind<ShoppingCartController>(ShoppingCartController).toSelf();
-}
+    this.container.bind<IShoppingCartService<ShoppingCart>>('ShoppingCartService').to(ShoppingCartService);
+    this.container.bind<IShoppingCartRepository<ShoppingCart>>('ShoppingCartRepository').to(ShoppingCartRepository);
+    this.container.bind<ShoppingCartController>(ShoppingCartController).toSelf();
+  }
 
-export() {
-const shoppingCartController = this.container.get<ShoppingCartController>(ShoppingCartController);
+  export() {
+    const shoppingCartController = this.container.get<ShoppingCartController>(ShoppingCartController);
     const shoppingCartService = this.container.get<IShoppingCartService<any>>('ShoppingCartService');
-return { shoppingCartController, shoppingCartService };
-}
+    return { shoppingCartController, shoppingCartService };
+  }
 }
 
 const shoppingCartContainer = new ShoppingCartContainer();

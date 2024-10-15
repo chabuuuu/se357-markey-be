@@ -9,18 +9,19 @@ import { BaseContainer } from '@/container/base.container';
 class ShopContainer extends BaseContainer {
   constructor() {
     super(Shop);
-this.container.bind<IShopService<Shop>>('ShopService').to(ShopService);
-this.container.bind<IShopRepository<Shop>>('ShopRepository').to(ShopRepository);
-this.container.bind<ShopController>(ShopController).toSelf();
-}
+    this.container.bind<IShopService<Shop>>('ShopService').to(ShopService);
+    this.container.bind<IShopRepository<Shop>>('ShopRepository').to(ShopRepository);
+    this.container.bind<ShopController>(ShopController).toSelf();
+  }
 
-export() {
-const shopController = this.container.get<ShopController>(ShopController);
+  export() {
+    const shopController = this.container.get<ShopController>(ShopController);
     const shopService = this.container.get<IShopService<any>>('ShopService');
-return { shopController, shopService };
-}
+    const shopRepository = this.container.get<IShopRepository<any>>('ShopRepository');
+    return { shopController, shopService, shopRepository };
+  }
 }
 
 const shopContainer = new ShopContainer();
-const { shopController, shopService } = shopContainer.export();
-export { shopController, shopService };
+const { shopController, shopService, shopRepository } = shopContainer.export();
+export { shopController, shopService, shopRepository };

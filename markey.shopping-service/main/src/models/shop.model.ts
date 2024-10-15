@@ -1,15 +1,6 @@
 import { Product } from '@/models/product.model';
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  Unique
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { BaseEntity } from '@/models/base_model.model';
 
 @Entity('shops')
 @Unique(['name'])

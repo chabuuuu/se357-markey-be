@@ -7,7 +7,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 
 export class CategoryRepository extends BaseRepository<Category> implements ICategoryRepository<Category> {
-constructor(@inject(ITYPES.Datasource) dataSource: DataSource) {
-super(dataSource.getRepository(Category));
-}
+  constructor(@inject(ITYPES.Datasource) dataSource: DataSource) {
+    super(dataSource.getRepository(Category));
+  }
 }

@@ -6,10 +6,10 @@ import { inject, injectable } from 'inversify';
 
 @injectable()
 export class ShopService extends BaseCrudService<Shop> implements IShopService<Shop> {
-private shopRepository: IShopRepository<Shop>;
+  private shopRepository: IShopRepository<Shop>;
 
-constructor(@inject('ShopRepository') shopRepository: IShopRepository<Shop>) {
-super(shopRepository);
-this.shopRepository = shopRepository;
-}
+  constructor(@inject('ShopRepository') shopRepository: IShopRepository<Shop>) {
+    super(shopRepository);
+    this.shopRepository = shopRepository;
+  }
 }

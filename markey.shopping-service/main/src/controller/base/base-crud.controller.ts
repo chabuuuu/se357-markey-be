@@ -41,6 +41,7 @@ export class BaseCrudController<MODEL> implements IBaseCrudController<MODEL> {
     try {
       const { page, rpp } = req.query;
       const paging = new PagingDto(Number(page), Number(rpp));
+
       const result = await this.service.findAllWithPaging({ paging });
       res.send_ok('Found successfully', result);
     } catch (error) {

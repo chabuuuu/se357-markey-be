@@ -7,7 +7,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 
 export class ShopRepository extends BaseRepository<Shop> implements IShopRepository<Shop> {
-constructor(@inject(ITYPES.Datasource) dataSource: DataSource) {
-super(dataSource.getRepository(Shop));
-}
+  constructor(@inject(ITYPES.Datasource) dataSource: DataSource) {
+    super(dataSource.getRepository(Shop));
+  }
 }

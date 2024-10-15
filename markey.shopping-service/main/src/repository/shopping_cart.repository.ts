@@ -6,8 +6,11 @@ import { inject } from 'inversify';
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 
-export class ShoppingCartRepository extends BaseRepository<ShoppingCart> implements IShoppingCartRepository<ShoppingCart> {
-constructor(@inject(ITYPES.Datasource) dataSource: DataSource) {
-super(dataSource.getRepository(ShoppingCart));
-}
+export class ShoppingCartRepository
+  extends BaseRepository<ShoppingCart>
+  implements IShoppingCartRepository<ShoppingCart>
+{
+  constructor(@inject(ITYPES.Datasource) dataSource: DataSource) {
+    super(dataSource.getRepository(ShoppingCart));
+  }
 }

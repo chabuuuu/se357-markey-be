@@ -7,13 +7,13 @@ import { inject, injectable } from 'inversify';
 
 @injectable()
 export class ShoppingCartController {
-public common: IBaseCrudController<ShoppingCart>;
-private shoppingCartService: IShoppingCartService<ShoppingCart>;
-constructor(
-@inject('ShoppingCartService') shoppingCartService: IShoppingCartService<ShoppingCart>,
-@inject(ITYPES.Controller) common: IBaseCrudController<ShoppingCart>
-) {
-this.shoppingCartService = shoppingCartService;
-this.common = common;
-}
+  public common: IBaseCrudController<ShoppingCart>;
+  private shoppingCartService: IShoppingCartService<ShoppingCart>;
+  constructor(
+    @inject('ShoppingCartService') shoppingCartService: IShoppingCartService<ShoppingCart>,
+    @inject(ITYPES.Controller) common: IBaseCrudController<ShoppingCart>
+  ) {
+    this.shoppingCartService = shoppingCartService;
+    this.common = common;
+  }
 }

@@ -6,10 +6,10 @@ import { inject, injectable } from 'inversify';
 
 @injectable()
 export class CategoryService extends BaseCrudService<Category> implements ICategoryService<Category> {
-private categoryRepository: ICategoryRepository<Category>;
+  private categoryRepository: ICategoryRepository<Category>;
 
-constructor(@inject('CategoryRepository') categoryRepository: ICategoryRepository<Category>) {
-super(categoryRepository);
-this.categoryRepository = categoryRepository;
-}
+  constructor(@inject('CategoryRepository') categoryRepository: ICategoryRepository<Category>) {
+    super(categoryRepository);
+    this.categoryRepository = categoryRepository;
+  }
 }

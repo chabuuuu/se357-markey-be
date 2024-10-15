@@ -1,5 +1,7 @@
 import { Category } from '@/models/category.model';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity } from '@/models/base_model.model';
+import { Shop } from '@/models/shop.model';
 
 @Entity('products')
 export class Product extends BaseEntity {
@@ -51,11 +53,17 @@ export class Product extends BaseEntity {
   })
   tags?: string[];
 
+  @Column({ name: 'category_id' })
+  categoryId!: string;
+
+  @Column({ name: 'shop_id' })
+  shopId!: string;
+
   @JoinColumn({ name: 'category_id' })
   @ManyToOne(() => Category, (category) => category.products)
   category!: Category;
 
   @JoinColumn({ name: 'shop_id' })
-  @ManyToOne(() => Category, (category) => category.products)
-  shop!: Category;
+  @ManyToOne(() => Shop, (shop) => shop.products)
+  shop!: Shop;
 }
