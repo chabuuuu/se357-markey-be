@@ -10,8 +10,9 @@ import { Product } from '@/models/product.model';
 import { ShoppingCart } from '@/models/shopping_cart.model';
 import { Shop } from '@/models/shop.model';
 import { GlobalConfig } from '@/utils/config/global-config.util';
+import { ProductRating } from '@/models/product_rating.model';
 
-const models = [Account, Role, BaseEntity, CartItem, Category, Product, ShoppingCart, Shop];
+const models = [ProductRating, BaseEntity, CartItem, Category, Product, ShoppingCart, Shop];
 export class AppDataSourceSingleton {
   private static instance: DataSource;
 

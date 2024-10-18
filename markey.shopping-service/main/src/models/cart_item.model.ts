@@ -1,3 +1,4 @@
+import { Product } from '@/models/product.model';
 import { ShoppingCart } from '@/models/shopping_cart.model';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
@@ -19,4 +20,10 @@ export class CartItem {
   @JoinColumn({ name: 'shopping_cart_id' })
   @ManyToOne(() => ShoppingCart, (shoppingCart) => shoppingCart.cartItems)
   shoppingCart!: ShoppingCart;
+
+  @JoinColumn({ name: 'product_id' })
+  @ManyToOne(() => Product, {
+    eager: true
+  })
+  product!: Product;
 }
