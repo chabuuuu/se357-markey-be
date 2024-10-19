@@ -1,7 +1,8 @@
 import { Category } from '@/models/category.model';
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from '@/models/base_model.model';
 import { Shop } from '@/models/shop.model';
+import { ProductRating } from '@/models/product_rating.model';
 
 @Entity('products')
 export class Product extends BaseEntity {
@@ -66,4 +67,7 @@ export class Product extends BaseEntity {
   @JoinColumn({ name: 'shop_id' })
   @ManyToOne(() => Shop, (shop) => shop.products)
   shop!: Shop;
+
+  @OneToMany(() => ProductRating, (productRating) => productRating.product)
+  productRatings!: Promise<ProductRating[]>;
 }

@@ -14,6 +14,30 @@ export class BaseCrudService<MODEL> implements IBaseCrudService<MODEL> {
   constructor(@inject(ITYPES.Repository) baseRepository: IBaseRepository<MODEL>) {
     this.baseRepository = baseRepository;
   }
+
+  async findWithPaging(options: {
+    filter?: Partial<MODEL> | undefined;
+    paging?: PagingDto;
+    order?: RecordOrderType[];
+    relations?: string[];
+    select?: FindOptionsSelect<MODEL> | undefined;
+  }): Promise<PagingResponseDto<MODEL>> {
+    const contents = await this.baseRepository.findMany({
+      paging: options.paging,
+      select: options.select,
+      relations: options.relations,
+      order: options.order,
+      filter: options.filter
+    });
+    const totalRecords = await this.baseRepository.count({
+      filter: options.filter
+    });
+    return {
+      items: contents,
+      total: totalRecords
+    };
+  }
+
   async create<DTO>(payload: { data: DeepPartial<MODEL> }): Promise<MODEL> {
     console.log('payload', payload);
 

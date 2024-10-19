@@ -20,6 +20,8 @@ export class ShoppingCart {
   })
   shopperId!: string;
 
-  @OneToMany(() => CartItem, (cart_item) => cart_item.shoppingCart)
+  @OneToMany(() => CartItem, (cart_item) => cart_item.shoppingCart, {
+    cascade: true
+  })
   cartItems!: CartItem[];
 }

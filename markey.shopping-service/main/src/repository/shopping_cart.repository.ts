@@ -4,7 +4,7 @@ import { IShoppingCartRepository } from '@/repository/interface/i.shopping_cart.
 import { ITYPES } from '@/types/interface.types';
 import { inject } from 'inversify';
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { DataSource, FindOptionsSelect } from 'typeorm';
 
 export class ShoppingCartRepository
   extends BaseRepository<ShoppingCart>
