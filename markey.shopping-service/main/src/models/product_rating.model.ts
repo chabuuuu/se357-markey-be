@@ -45,5 +45,5 @@ export class ProductRating extends BaseEntity {
     onDelete: 'CASCADE'
   })
   @JoinColumn({ name: 'product_id' })
-  product!: Product;
+  product!: Promise<Product>;
 }

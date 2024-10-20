@@ -10,7 +10,4 @@ export class CreateRatingReq {
 
   @IsNotEmpty()
   productId!: string;
-
-  // After receive
-  shopperId!: string;
 }

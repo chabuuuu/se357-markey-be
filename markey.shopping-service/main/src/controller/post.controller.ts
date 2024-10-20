@@ -8,6 +8,7 @@ import { Post } from '@/models/post.model';
 import { IPostService } from '@/service/interface/i.post.service';
 import { ITYPES } from '@/types/interface.types';
 import BaseError from '@/utils/error/base.error';
+import { SessionUtil } from '@/utils/session-util';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 
@@ -22,17 +23,6 @@ export class PostController {
     this.postService = postService;
     this.common = common;
   }
-  getSalesmanCurrentlyLoggedIn(req: Request): JwtClaimDto {
-    const user = req.user;
-    if (user?.roleName !== RoleNameEnum.salesman) {
-      throw new BaseError(ErrorCode.PERMISSION_01, 'Chỉ người dùng có quyền salesman mới có quyền này');
-    }
-    if (!user.id) {
-      throw new BaseError(ErrorCode.VALIDATION_ERROR, 'Không tìm thấy thông tin người dùng');
-    }
-
-    return user;
-  }
 
   /**
    * * POST /post/
@@ -41,7 +31,7 @@ export class PostController {
     try {
       const data = req.body;
 
-      const salesman = this.getSalesmanCurrentlyLoggedIn(req);
+      const salesman = SessionUtil.getSalesmanCurrentlyLoggedIn(req);
 
       const salesmanId = salesman.id;
 
@@ -143,7 +133,7 @@ export class PostController {
     try {
       const postId = req.params.id;
 
-      const salesman = this.getSalesmanCurrentlyLoggedIn(req);
+      const salesman = SessionUtil.getSalesmanCurrentlyLoggedIn(req);
       const salesmanId = salesman.id;
 
       await this.postService.deletePostById(salesmanId, postId);

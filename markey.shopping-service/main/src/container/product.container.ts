@@ -22,10 +22,11 @@ class ProductContainer extends BaseContainer {
   export() {
     const productController = this.container.get<ProductController>(ProductController);
     const productService = this.container.get<IProductService<any>>('ProductService');
-    return { productController, productService };
+    const productRepository = this.container.get<IProductRepository<any>>('ProductRepository');
+    return { productController, productService, productRepository };
   }
 }
 
 const productContainer = new ProductContainer();
-const { productController, productService } = productContainer.export();
-export { productController, productService };
+const { productController, productService, productRepository } = productContainer.export();
+export { productController, productService, productRepository };

@@ -5,6 +5,7 @@ export const ListProductSelect = {
   name: true,
   price: true,
   description: true,
+  ratingAverage: true,
   category: {
     id: true,
     name: true
