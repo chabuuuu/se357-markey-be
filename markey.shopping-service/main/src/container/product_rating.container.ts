@@ -5,20 +5,25 @@ import { ProductRatingRepository } from '@/repository/product_rating.repository'
 import { IProductRatingService } from '@/service/interface/i.product_rating.service';
 import { IProductRatingRepository } from '@/repository/interface/i.product_rating.repository';
 import { BaseContainer } from '@/container/base.container';
+import { IProductRepository } from '@/repository/interface/i.product.repository';
+import { productRepository } from '@/container/product.container';
 
 class ProductRatingContainer extends BaseContainer {
   constructor() {
     super(ProductRating);
-this.container.bind<IProductRatingService<ProductRating>>('ProductRatingService').to(ProductRatingService);
-this.container.bind<IProductRatingRepository<ProductRating>>('ProductRatingRepository').to(ProductRatingRepository);
-this.container.bind<ProductRatingController>(ProductRatingController).toSelf();
-}
+    this.container.bind<IProductRatingService<ProductRating>>('ProductRatingService').to(ProductRatingService);
+    this.container.bind<IProductRatingRepository<ProductRating>>('ProductRatingRepository').to(ProductRatingRepository);
+    this.container.bind<ProductRatingController>(ProductRatingController).toSelf();
 
-export() {
-const productRatingController = this.container.get<ProductRatingController>(ProductRatingController);
+    //Import
+    this.container.bind<IProductRepository<any>>('ProductRepository').toConstantValue(productRepository);
+  }
+
+  export() {
+    const productRatingController = this.container.get<ProductRatingController>(ProductRatingController);
     const productRatingService = this.container.get<IProductRatingService<any>>('ProductRatingService');
-return { productRatingController, productRatingService };
-}
+    return { productRatingController, productRatingService };
+  }
 }
 
 const productRatingContainer = new ProductRatingContainer();

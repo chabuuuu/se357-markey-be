@@ -1,11 +1,13 @@
 import { IBaseCrudController } from '@/controller/interfaces/i.base-curd.controller';
 import { JwtClaimDto } from '@/dto/jwt-claim.dto';
+import { CreateRatingReq } from '@/dto/rating/create-rating.req';
 import { ErrorCode } from '@/enums/error-code.enums';
 import { RoleNameEnum } from '@/enums/role-name.enum';
 import { ProductRating } from '@/models/product_rating.model';
 import { IProductRatingService } from '@/service/interface/i.product_rating.service';
 import { ITYPES } from '@/types/interface.types';
 import BaseError from '@/utils/error/base.error';
+import { SessionUtil } from '@/utils/session-util';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 
@@ -20,37 +22,19 @@ export class ProductRatingController {
     this.productRatingService = productRatingService;
     this.common = common;
   }
-  getShopperCurrentlyLoggedIn(req: Request): JwtClaimDto {
-    const user = req.user;
-    if (user?.roleName !== RoleNameEnum.shopper) {
-      throw new BaseError(
-        ErrorCode.PERMISSION_01,
-        'Chỉ người dùng có quyền shopper mới có thể thêm sản phẩm vào giỏ hàng'
-      );
-    }
-    if (!user.id) {
-      throw new BaseError(ErrorCode.VALIDATION_ERROR, 'Không tìm thấy thông tin người dùng');
-    }
-
-    return user;
-  }
 
   /**
    * * POST /product_rating/
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = req.body;
+      const data: CreateRatingReq = req.body;
 
-      const shopper = this.getShopperCurrentlyLoggedIn(req);
+      const shopper = SessionUtil.getShopperCurrentlyLoggedIn(req);
 
       const shopperId = shopper.id;
 
-      data.shopperId = shopperId;
-
-      const result = await this.productRatingService.create({
-        data: data
-      });
+      const result = await this.productRatingService.createRating(data, shopperId);
 
       return res.send_ok('Created successfully', result);
     } catch (error) {

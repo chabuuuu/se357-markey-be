@@ -35,6 +35,12 @@ export class Product extends BaseEntity {
   quantity!: number;
 
   @Column({
+    name: 'rating_average',
+    nullable: true
+  })
+  ratingAverage?: number;
+
+  @Column({
     type: 'text',
     array: true,
     nullable: true

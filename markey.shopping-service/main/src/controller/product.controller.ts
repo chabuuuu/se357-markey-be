@@ -7,6 +7,7 @@ import { Product } from '@/models/product.model';
 import { IProductService } from '@/service/interface/i.product.service';
 import { ITYPES } from '@/types/interface.types';
 import { convertToDto } from '@/utils/dto-convert/convert-to-dto.util';
+import { getPagingUtil } from '@/utils/get-paging.util';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 
@@ -81,14 +82,57 @@ export class ProductController {
    */
   async findWithPaging(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, rpp } = req.query;
-      const paging = new PagingDto(Number(page), Number(rpp));
+      const paging = getPagingUtil(req);
 
       const result = await this.productService.findAllWithPaging({
         paging: paging,
         relations: ['category', 'shop'],
         select: ListProductSelect
       });
+      return res.send_ok('Found successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * GET /product/by-shop/:shopId
+   */
+  async findByShopId(req: Request, res: Response, next: NextFunction) {
+    try {
+      const paging = getPagingUtil(req);
+      const shopId = req.params.shopId;
+      const result = await this.productService.findWithPaging({
+        filter: {
+          shopId: shopId
+        },
+        relations: ['category', 'shop'],
+        select: ListProductSelect,
+        paging: paging
+      });
+
+      return res.send_ok('Found successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * GET /product/by-category/:categoryId
+   */
+  async findByCategoryId(req: Request, res: Response, next: NextFunction) {
+    try {
+      const paging = getPagingUtil(req);
+      const categoryId = req.params.categoryId;
+      const result = await this.productService.findWithPaging({
+        filter: {
+          categoryId: categoryId
+        },
+        relations: ['category', 'shop'],
+        select: ListProductSelect,
+        paging: paging
+      });
+
       return res.send_ok('Found successfully', result);
     } catch (error) {
       next(error);

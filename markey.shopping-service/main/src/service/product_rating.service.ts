@@ -1,7 +1,12 @@
+import { CreateRatingReq } from '@/dto/rating/create-rating.req';
+import { ErrorCode } from '@/enums/error-code.enums';
+import { Product } from '@/models/product.model';
 import { ProductRating } from '@/models/product_rating.model';
+import { IProductRepository } from '@/repository/interface/i.product.repository';
 import { IProductRatingRepository } from '@/repository/interface/i.product_rating.repository';
 import { BaseCrudService } from '@/service/base/base.service';
 import { IProductRatingService } from '@/service/interface/i.product_rating.service';
+import BaseError from '@/utils/error/base.error';
 import { inject, injectable } from 'inversify';
 
 @injectable()
@@ -10,31 +15,71 @@ export class ProductRatingService
   implements IProductRatingService<ProductRating>
 {
   private productRatingRepository: IProductRatingRepository<ProductRating>;
+  private productRepository: IProductRepository<Product>;
 
-  constructor(@inject('ProductRatingRepository') productRatingRepository: IProductRatingRepository<ProductRating>) {
+  constructor(
+    @inject('ProductRatingRepository') productRatingRepository: IProductRatingRepository<ProductRating>,
+    @inject('ProductRepository') productRepository: IProductRepository<Product>
+  ) {
     super(productRatingRepository);
     this.productRatingRepository = productRatingRepository;
+    this.productRepository = productRepository;
   }
 
-  async getAvarageRating(productId: string): Promise<number> {
-    const ratings = await this.productRatingRepository.findMany({
+  /**
+   * * Salesman create new rating
+   *  This function will create a new rating for a product and update the average rating of that product
+   * @param data
+   * @param shopperId
+   */
+  async createRating(data: CreateRatingReq, shopperId: string): Promise<ProductRating> {
+    const product = await this.productRepository.findOne({
       filter: {
-        productId: productId
+        id: data.productId
       }
     });
 
-    if (ratings.length === 0) {
-      return 0;
+    if (!product) {
+      throw new BaseError(ErrorCode.NF_01, 'Product not found');
     }
 
-    let totalRating = 0;
-
-    ratings.forEach((rating) => {
-      totalRating += rating.rating;
+    // 1. Create new rating
+    const rating = await this.productRatingRepository.create({
+      data: {
+        ...data,
+        shopperId: shopperId
+      }
     });
 
-    console.log('totalRating', totalRating);
+    //2. Update rating average for that product
 
-    return totalRating / ratings.length;
+    const averageRating = product.ratingAverage;
+
+    const newAverageRating = averageRating ? (averageRating + rating.rating) / 2 : rating.rating;
+
+    await this.productRepository.findOneAndUpdate({
+      filter: {
+        id: product.id
+      },
+      updateData: {
+        ratingAverage: newAverageRating
+      }
+    });
+
+    return rating;
+  }
+
+  async getAvarageRating(productId: string): Promise<number | undefined> {
+    const product = await this.productRepository.findOne({
+      filter: {
+        id: productId
+      }
+    });
+
+    if (!product) {
+      throw new BaseError(ErrorCode.NF_01, 'Product not found');
+    }
+
+    return product.ratingAverage;
   }
 }

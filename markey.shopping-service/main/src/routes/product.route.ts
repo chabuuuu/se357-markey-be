@@ -8,6 +8,8 @@ const productRouter = express.Router();
 
 productRouter
   .post('/', authenticateJWT, classValidate(CreateProductReq), productController.create.bind(productController))
+  .get('/by-shop/:shopId', productController.findByShopId.bind(productController))
+  .get('/by-category/:categoryId', productController.findByCategoryId.bind(productController))
   .get('/paging', productController.findWithPaging.bind(productController))
   .get('/:id', productController.findOne.bind(productController))
   .get('/', productController.findAll.bind(productController))
