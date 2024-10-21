@@ -1,5 +1,6 @@
 import { OrderDto } from '@/dto/oder.dto';
 import { PaymentMethodEnum } from '@/enums/payment-method.enum';
+import { PaymentStatusEnum } from '@/enums/payment-status.enum';
 import { BaseEntity } from '@/models/base_model.model';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -22,4 +23,11 @@ export class Payment extends BaseEntity {
 
   @Column({ name: 'order', type: 'jsonb', nullable: false })
   order!: OrderDto;
+
+  @Column({
+    type: 'enum',
+    enum: PaymentStatusEnum,
+    default: PaymentStatusEnum.NOT_PAID
+  })
+  status!: string;
 }

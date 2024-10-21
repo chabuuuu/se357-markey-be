@@ -1,5 +1,7 @@
 import { GetVnpUrl } from '@/dto/payment/get-vnp-url.res';
 import { ErrorCode } from '@/enums/error-code.enums';
+import { PaymentMethodEnum } from '@/enums/payment-method.enum';
+import { PaymentStatusEnum } from '@/enums/payment-status.enum';
 import { Payment } from '@/models/payment.model';
 import { IPaymentRepository } from '@/repository/interface/i.payment.repository';
 import { BaseCrudService } from '@/service/base/base.service';
@@ -15,6 +17,53 @@ export class PaymentService extends BaseCrudService<Payment> implements IPayment
   constructor(@inject('PaymentRepository') paymentRepository: IPaymentRepository<Payment>) {
     super(paymentRepository);
     this.paymentRepository = paymentRepository;
+  }
+
+  /**
+   * * Handle VNPay return
+   * @param vnp_Params
+   */
+  async handleVNPayReturn(vnp_Params: any): Promise<void> {
+    const orderId = vnp_Params['vnp_TxnRef'];
+    const amount = Number(vnp_Params['vnp_Amount']) / 100;
+    const bankCode = vnp_Params['vnp_BankCode'];
+    const cardType = vnp_Params['vnp_CardType'];
+    const orderInfo = vnp_Params['vnp_OrderInfo'];
+    delete vnp_Params['vnp_BankCode'];
+    delete vnp_Params['vnp_CardType'];
+    delete vnp_Params['vnp_OrderInfo'];
+    delete vnp_Params['vnp_TxnRef'];
+    delete vnp_Params['vnp_Amount'];
+    const paycheckInfo = vnp_Params;
+
+    const payment = await this.paymentRepository.findOne({
+      filter: {
+        orderId: orderId
+      }
+    });
+
+    if (!payment) {
+      throw new BaseError(ErrorCode.NF_01, 'Không tìm thấy đơn hàng');
+    }
+
+    if (payment.total !== amount) {
+      throw new BaseError(
+        ErrorCode.VALIDATION_ERROR,
+        'Số tiền không khớp, phải trả ' + payment.total + ' nhưng đã trả ' + amount
+      );
+    }
+
+    payment.status = PaymentStatusEnum.PAID;
+    payment.paymentInfo = {
+      bankCode,
+      cardType,
+      orderInfo,
+      paycheckInfo
+    };
+
+    await this.paymentRepository.save(payment);
+
+    return;
   }
 
   async getVnpUrl(paymentId: string, ipAddr: string): Promise<GetVnpUrl> {

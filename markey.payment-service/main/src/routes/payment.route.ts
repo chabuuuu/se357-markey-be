@@ -6,6 +6,8 @@ const paymentRouter = express.Router();
 
 paymentRouter
 
+  .get('/vnp-return', paymentController.vnpReturn.bind(paymentController))
+
   .get('/vnp-url/:paymentId', paymentController.getVnpUrl.bind(paymentController))
 
   .get('/by-order/:orderId', paymentController.getByOrder.bind(paymentController))
