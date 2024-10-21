@@ -1,8 +1,18 @@
 {
   "server": {
-    "port": 3000,
+    "port": 3002,
     "host": "localhost",
     "api_version": "/api/v1"
+  },
+  "microservices": {
+    "shopping": {
+      "url": "http://localhost:3001",
+      "api": {
+        "get_shopping_cart": {
+          "endpoint": "/cart/by-shopper"
+        }
+      }
+    }
   },
   "request_limit": {
     "limit": "100kb"

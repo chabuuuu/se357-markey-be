@@ -16,7 +16,7 @@ shoppingCartRouter
     classValidate(AddToCartReq),
     shoppingCartController.addToCart.bind(shoppingCartController)
   )
-
+  .get('/by-shopper/:shopperId', shoppingCartController.getCartByShopper.bind(shoppingCartController))
   .get('/me', authenticateJWT, shoppingCartController.getMyCart.bind(shoppingCartController));
 
 export default shoppingCartRouter;

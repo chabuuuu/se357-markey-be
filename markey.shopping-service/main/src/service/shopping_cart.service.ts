@@ -36,6 +36,8 @@ export class ShoppingCartService extends BaseCrudService<ShoppingCart> implement
     }
     result.shoppingCartId = cart.id;
     const productInCarts = new Array<ProductInCartRes>();
+    let total = 0;
+
     cart.cartItems.forEach((item) => {
       const productInCart = new ProductInCartRes();
       productInCart.id = item.productId;
@@ -46,9 +48,13 @@ export class ShoppingCartService extends BaseCrudService<ShoppingCart> implement
       productInCart.picture = item.product.picture;
 
       productInCarts.push(productInCart);
+
+      //Tính tổng tiền
+      total += item.amount * item.product.price;
     });
 
     result.products = productInCarts;
+    result.total = total;
 
     return result;
   }

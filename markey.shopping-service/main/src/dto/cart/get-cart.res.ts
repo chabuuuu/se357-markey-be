@@ -7,4 +7,7 @@ export class GetCartRes {
 
   @Expose()
   products!: ProductInCartRes[];
+
+  @Expose()
+  total!: number;
 }
