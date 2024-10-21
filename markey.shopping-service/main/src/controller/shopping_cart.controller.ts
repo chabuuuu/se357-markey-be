@@ -87,4 +87,21 @@ export class ShoppingCartController {
       next(error);
     }
   }
+
+  /*
+   * * GET /cart/by-shopper/:shopperId
+   * @param req
+   * @param res
+   * @param next
+   */
+  async getCartByShopper(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { shopperId } = req.params;
+      const result = await this.shoppingCartService.getCart(shopperId);
+
+      res.send_ok('Lấy thông tin giỏ hàng thành công', result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
