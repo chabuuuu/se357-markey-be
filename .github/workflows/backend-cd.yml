@@ -39,10 +39,10 @@ jobs:
           password: ${{ secrets.MARKEY_BACKEND_SERVER_PASSWORD }}
           port: 22
           script: |
-            cp ${{ env.ENV_FOLDER }}/payment-service.docker.env ${{ env.PAYMENT_SERVICE_FOLDER }}/main/.docker.env
-            cp ${{ env.ENV_FOLDER }}/order-service.docker.env ${{ env.ORDER_SERVICE_FOLDER }}/main/.docker.env
-            cp ${{ env.ENV_FOLDER }}/user-service.docker.env ${{ env.USER_SERVICE_FOLDER }}/main/.docker.env
-            cp ${{ env.ENV_FOLDER }}/shopping-service.docker.env ${{ env.SHOPPING_SERVICE_FOLDER }}/main/.docker.env
+            cp ${{ env.ENV_FOLDER }}/payment-service.docker.env ${{ env.PAYMENT_SERVICE_FOLDER }}/.docker.env
+            cp ${{ env.ENV_FOLDER }}/order-service.docker.env ${{ env.ORDER_SERVICE_FOLDER }}/.docker.env
+            cp ${{ env.ENV_FOLDER }}/user-service.docker.env ${{ env.USER_SERVICE_FOLDER }}/.docker.env
+            cp ${{ env.ENV_FOLDER }}/shopping-service.docker.env ${{ env.SHOPPING_SERVICE_FOLDER }}/.docker.env
             cp ${{ env.ENV_FOLDER }}/api-gateway.docker.env ${{ env.API_GATEWAY_FOLDER }}/.docker.env
 
 
