@@ -1,0 +1,52 @@
+name: Markey BACKEND CD Pipeline
+
+env:
+  PAYMENT_SERVICE_FOLDER: /root/markey_project/backend/markey.payment-service
+  ORDER_SERVICE_FOLDER: /root/markey_project/backend/markey.order-service
+  SHOPPING_SERVICE_FOLDER: /root/markey_project/backend/markey.shopping-service
+  USER_SERVICE_FOLDER: /root/markey_project/backend/markey.user-service
+  ENV_FOLDER: /root/markey_project/env_file/backend
+  PROJECT_FOLDER: /root/markey_project/backend
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Copy source code to server
+        uses: appleboy/scp-action@v0.1.1
+        with:
+          host: ${{ secrets.EDU_HUB_BACKEND_SERVER_HOST }}
+          username: ${{ secrets.EDU_HUB_BACKEND_SERVER_USER }}
+          password: ${{ secrets.EDU_HUB_BACKEND_SERVER_PASSWORD }}
+          source: "./*"
+          target: ${{ secrets.PROJECT_FOLDER }}
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.EDU_HUB_BACKEND_SERVER_HOST }}
+          username: ${{ secrets.EDU_HUB_BACKEND_SERVER_USER }}
+          password: ${{ secrets.EDU_HUB_BACKEND_SERVER_PASSWORD }}
+          port: 22
+          script: |
+            cp ${{ secrets.ENV_FOLDER }}/payment-service.docker.env ${{ secrets.PAYMENT_SERVICE_FOLDER }}/main/.docker.env
+            cp ${{ secrets.ENV_FOLDER }}/order-service.docker.env ${{ secrets.ORDER_SERVICE_FOLDER }}/main/.docker.env
+            cp ${{ secrets.ENV_FOLDER }}/user-service.docker.env ${{ secrets.USER_SERVICE_FOLDER }}/main/.docker.env
+            cp ${{ secrets.ENV_FOLDER }}/shopping-service.docker.env ${{ secrets.SHOPPING_SERVICE_FOLDER }}/main/.docker.env
+
+
+            cd ${{ secrets.PROJECT_FOLDER }}
+            sudo chmod +x docker-compose.down-all.sh    
+            sudo chmod +x docker-compose.up-all.sh    
+
+            ./docker-compose.down-all.sh
+            ./docker-compose.up-all.sh
