@@ -7,6 +7,16 @@
     "host": "localhost",
     "api_version": "/api/v1"
   },
+  "microservices": {
+    "order": {
+      "url": "http://markey.order-service:4000",
+      "api": {
+        "send_paid_event": {
+          "endpoint": "/order/send-paid-event"
+        }
+      }
+    }
+  },
   "cors": {
     "origin": "*",
     "methods": ["GET", "POST", "PUT", "DELETE", "UPDATE"],
