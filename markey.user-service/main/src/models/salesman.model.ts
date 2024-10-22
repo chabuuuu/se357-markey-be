@@ -93,7 +93,7 @@ export class Salesman extends BaseEntity {
   })
   isApproved!: boolean;
 
-  //fks
-  @OneToOne(() => Shop, (shop) => shop.salesman, { cascade: true })
-  shop!: Shop;
+  // //fks
+  // @OneToOne(() => Shop, (shop) => shop.salesman, { cascade: true })
+  // shop!: Shop;
 }

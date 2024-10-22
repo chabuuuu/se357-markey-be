@@ -54,4 +54,46 @@ export class OrderController {
       next(error);
     }
   }
+
+  /**
+   * * GET /order/me
+   */
+  async getMyOrders(req: Request, res: Response, next: NextFunction) {
+    try {
+      const shopper = SessionUtil.getShopperCurrentlyLoggedIn(req);
+
+      const shopperId = shopper.id;
+
+      const result = await this.orderService.findMany({
+        filter: {
+          shopperId: shopperId
+        },
+        order: [
+          {
+            column: 'createAt',
+            direction: 'DESC'
+          }
+        ]
+      });
+
+      return res.send_ok('Orders found', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * PUT /order/send-paid-event
+   */
+  async handlePaidEvent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+
+      await this.orderService.handlePaidEvent(data);
+
+      return res.send_ok('Order status updated');
+    } catch (error) {
+      next(error);
+    }
+  }
 }

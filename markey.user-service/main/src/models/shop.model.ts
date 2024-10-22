@@ -34,7 +34,7 @@ export class Shop extends BaseEntity {
   })
   salesmanId!: string;
 
-  @OneToOne(() => Salesman, (salesman) => salesman.shop)
-  @JoinColumn({ name: 'salesman_id' })
-  salesman!: Salesman;
+  // @OneToOne(() => Salesman, (salesman) => salesman.shop)
+  // @JoinColumn({ name: 'salesman_id' })
+  // salesman!: Salesman;
 }

@@ -1,9 +1,14 @@
 import { CreateOrderReq } from '@/dto/order/create-order.req';
+import { CreatePaymentReq } from '@/dto/payment/create-payment.req';
+import { PaymentCreatedEventDto } from '@/dto/payment/payment-created-event.dto';
 import { ProductDto } from '@/dto/product.dto';
+import { OrderStatusEnum } from '@/enums/order-status.enum';
+import { PaymentMethodEnum } from '@/enums/payment-method.enum';
 import { Order } from '@/models/order.model';
 import { OrderItem } from '@/models/order_item.model';
 import { ICartRepository } from '@/repository/interface/i.cart.repository';
 import { IOrderRepository } from '@/repository/interface/i.order.repository';
+import { IPaymentRepository } from '@/repository/interface/i.payment.repository';
 import { BaseCrudService } from '@/service/base/base.service';
 import { IOrderService } from '@/service/interface/i.order.service';
 import { inject, injectable } from 'inversify';
@@ -12,14 +17,43 @@ import { inject, injectable } from 'inversify';
 export class OrderService extends BaseCrudService<Order> implements IOrderService<Order> {
   private orderRepository: IOrderRepository<Order>;
   private cartRepository: ICartRepository;
+  private paymentRepository: IPaymentRepository;
 
   constructor(
     @inject('OrderRepository') orderRepository: IOrderRepository<Order>,
-    @inject('CartRepository') cartRepository: ICartRepository
+    @inject('CartRepository') cartRepository: ICartRepository,
+    @inject('PaymentRepository') paymentRepository: IPaymentRepository
   ) {
     super(orderRepository);
     this.orderRepository = orderRepository;
     this.cartRepository = cartRepository;
+    this.paymentRepository = paymentRepository;
+  }
+
+  /**
+   * * Handle paid event from payment service
+   * This will handle the paid event from payment service
+   * by update the order status to paid
+   * @param orderId
+   */
+  async handlePaidEvent(data: PaymentCreatedEventDto): Promise<void> {
+    const order = await this.orderRepository.findOne({
+      filter: {
+        id: data.orderId
+      }
+    });
+
+    if (!order) {
+      console.log('Order not found');
+      return;
+    }
+
+    order.status = OrderStatusEnum.PENDING;
+    order.paymentId = data.id;
+
+    await this.orderRepository.save(order);
+
+    return;
   }
 
   /**
@@ -60,6 +94,17 @@ export class OrderService extends BaseCrudService<Order> implements IOrderServic
 
     order.items = orderItems;
 
-    return this.orderRepository.save(order);
+    const createdOrder = await this.orderRepository.save(order);
+
+    //Call to payment service to create payment
+    const createPaymentReq = new CreatePaymentReq();
+    createPaymentReq.total = order.total;
+    createPaymentReq.order = order;
+    createPaymentReq.orderId = order.id;
+    createPaymentReq.paymentMethod = data.paymentMethod;
+
+    this.paymentRepository.createPayment(createPaymentReq);
+
+    return createdOrder;
   }
 }

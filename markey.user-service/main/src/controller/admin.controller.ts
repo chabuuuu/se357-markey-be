@@ -66,4 +66,17 @@ export class AdminController {
       next(error);
     }
   }
+
+  /**
+   * * PUT /admin/approve-salesman/:salesmanId
+   */
+  async approveSalesman(req: Request, res: Response, next: NextFunction) {
+    try {
+      const salesmanId = req.params.salesmanId;
+      await this.adminService.approveSalesman(salesmanId);
+      res.send_ok('Approve salesman success');
+    } catch (error) {
+      next(error);
+    }
+  }
 }

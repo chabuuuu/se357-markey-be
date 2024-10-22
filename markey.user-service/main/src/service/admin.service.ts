@@ -15,19 +15,46 @@ import { inject, injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import bcrypt from 'bcrypt';
+import { ISalesmanRepository } from '@/repository/interface/i.salesman.repository';
+import { Salesman } from '@/models/salesman.model';
 
 @injectable()
 export class AdminService extends BaseCrudService<Admin> implements IAdminService<Admin> {
   private adminRepository: IAdminRepository<Admin>;
   private roleRepository: IRoleRepository<Role>;
+  private salesmanRepository: ISalesmanRepository<Salesman>;
 
   constructor(
     @inject('AdminRepository') adminRepository: IAdminRepository<Admin>,
-    @inject('RoleRepository') roleRepository: IRoleRepository<Role>
+    @inject('RoleRepository') roleRepository: IRoleRepository<Role>,
+    @inject('SalesmanRepository') salesmanRepository: ISalesmanRepository<Salesman>
   ) {
     super(adminRepository);
     this.adminRepository = adminRepository;
     this.roleRepository = roleRepository;
+    this.salesmanRepository = salesmanRepository;
+  }
+  /**
+   * * Approve for salesman now can login
+   * @param salesmanId
+   */
+  async approveSalesman(salesmanId: string): Promise<void> {
+    const salesman = await this.salesmanRepository.findOne({
+      filter: {
+        id: salesmanId
+      }
+    });
+    if (!salesman) {
+      throw new BaseError(ErrorCode.NF_01, 'Salesman not found');
+    }
+    await this.salesmanRepository.findOneAndUpdate({
+      filter: { id: salesmanId },
+      updateData: {
+        isApproved: true
+      }
+    });
+
+    return;
   }
 
   /**

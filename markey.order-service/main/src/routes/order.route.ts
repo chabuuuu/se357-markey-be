@@ -7,6 +7,10 @@ const orderRouter = express.Router();
 
 orderRouter
 
+  .put('/send-paid-event', orderController.handlePaidEvent.bind(orderController))
+
+  .get('/me', authenticateJWT, orderController.getMyOrders.bind(orderController))
+
   .get('/paging', orderController.common.findWithPaging.bind(orderController.common))
 
   .get('/:id', orderController.getById.bind(orderController))

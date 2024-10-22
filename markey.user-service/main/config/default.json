@@ -11,6 +11,19 @@
   "request_limit": {
     "limit": "100kb"
   },
+  "microservices": {
+    "shopping": {
+      "url": "http://localhost:3001",
+      "api": {
+        "create_shopping_cart": {
+          "endpoint": "/cart/"
+        },
+        "create_shop": {
+          "endpoint": "/shop/create"
+        }
+      }
+    }
+  },
   "cors": {
     "origin": "*",
     "methods": ["GET", "POST", "PUT", "DELETE", "UPDATE"],

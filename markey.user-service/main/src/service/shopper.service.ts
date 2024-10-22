@@ -25,19 +25,23 @@ import { TIME_CONSTANTS } from '@/constants/time.constants';
 import _ from 'lodash';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
+import { IShoppingCartRepository } from '@/repository/interface/i.shopping_cart.repository';
 
 @injectable()
 export class ShopperService extends BaseCrudService<Shopper> implements IShopperService<Shopper> {
   private shopperRepository: IShopperRepository<Shopper>;
   private roleRepository: IRoleRepository<Role>;
+  private shoppingCartRepository: IShoppingCartRepository;
 
   constructor(
     @inject('ShopperRepository') shopperRepository: IShopperRepository<Shopper>,
-    @inject('RoleRepository') roleRepository: IRoleRepository<Role>
+    @inject('RoleRepository') roleRepository: IRoleRepository<Role>,
+    @inject('ShoppingCartRepository') shoppingCartRepository: IShoppingCartRepository
   ) {
     super(shopperRepository);
     this.shopperRepository = shopperRepository;
     this.roleRepository = roleRepository;
+    this.shoppingCartRepository = shoppingCartRepository;
   }
 
   async login(data: ShopperLoginReq): Promise<ShopperLoginRes> {
@@ -186,8 +190,13 @@ export class ShopperService extends BaseCrudService<Shopper> implements IShopper
     const { tempUser } = smsActivateCacheDto;
 
     const shopper = convertToDto(ShopperRegisterReq, tempUser);
-    await this.shopperRepository.create({
+    const createdShopper = await this.shopperRepository.create({
       data: shopper
+    });
+
+    //Call shopping service to create cart
+    this.shoppingCartRepository.createCart({
+      shopperId: createdShopper.id
     });
 
     return 'Activate phone number success, you can now login';

@@ -17,3 +17,4 @@ cd ../markey.user-service/main
 npm install
 
 npm run start:dev
+

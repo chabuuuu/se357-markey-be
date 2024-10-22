@@ -14,6 +14,14 @@ export class GlobalConfig {
         };
       };
     };
+    payment: {
+      url: string;
+      api: {
+        create_payment: {
+          endpoint: string;
+        };
+      };
+    };
   } = config.get('microservices');
 
   /**
