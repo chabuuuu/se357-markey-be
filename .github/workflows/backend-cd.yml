@@ -5,6 +5,7 @@ env:
   ORDER_SERVICE_FOLDER: /root/markey_project/backend/markey.order-service
   SHOPPING_SERVICE_FOLDER: /root/markey_project/backend/markey.shopping-service
   USER_SERVICE_FOLDER: /root/markey_project/backend/markey.user-service
+  API_GATEWAY_FOLDER: /root/markey_project/backend/api-gateway
   ENV_FOLDER: /root/markey_project/env_file/backend
   PROJECT_FOLDER: /root/markey_project/backend
 
@@ -42,6 +43,7 @@ jobs:
             cp ${{ env.ENV_FOLDER }}/order-service.docker.env ${{ env.ORDER_SERVICE_FOLDER }}/main/.docker.env
             cp ${{ env.ENV_FOLDER }}/user-service.docker.env ${{ env.USER_SERVICE_FOLDER }}/main/.docker.env
             cp ${{ env.ENV_FOLDER }}/shopping-service.docker.env ${{ env.SHOPPING_SERVICE_FOLDER }}/main/.docker.env
+            cp ${{ env.ENV_FOLDER }}/api-gateway.docker.env ${{ env.API_GATEWAY_FOLDER }}/.docker.env
 
 
             cd ${{ env.PROJECT_FOLDER }}
