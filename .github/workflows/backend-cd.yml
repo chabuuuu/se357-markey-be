@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.MARKEY_BACKEND_SERVER_USER }}
           password: ${{ secrets.MARKEY_BACKEND_SERVER_PASSWORD }}
           source: "./*"
-          target: ${{ secrets.PROJECT_FOLDER }}
+          target: ${{ env.PROJECT_FOLDER }}
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.4
@@ -38,13 +38,13 @@ jobs:
           password: ${{ secrets.MARKEY_BACKEND_SERVER_PASSWORD }}
           port: 22
           script: |
-            cp ${{ secrets.ENV_FOLDER }}/payment-service.docker.env ${{ secrets.PAYMENT_SERVICE_FOLDER }}/main/.docker.env
-            cp ${{ secrets.ENV_FOLDER }}/order-service.docker.env ${{ secrets.ORDER_SERVICE_FOLDER }}/main/.docker.env
-            cp ${{ secrets.ENV_FOLDER }}/user-service.docker.env ${{ secrets.USER_SERVICE_FOLDER }}/main/.docker.env
-            cp ${{ secrets.ENV_FOLDER }}/shopping-service.docker.env ${{ secrets.SHOPPING_SERVICE_FOLDER }}/main/.docker.env
+            cp ${{ env.ENV_FOLDER }}/payment-service.docker.env ${{ env.PAYMENT_SERVICE_FOLDER }}/main/.docker.env
+            cp ${{ env.ENV_FOLDER }}/order-service.docker.env ${{ env.ORDER_SERVICE_FOLDER }}/main/.docker.env
+            cp ${{ env.ENV_FOLDER }}/user-service.docker.env ${{ env.USER_SERVICE_FOLDER }}/main/.docker.env
+            cp ${{ env.ENV_FOLDER }}/shopping-service.docker.env ${{ env.SHOPPING_SERVICE_FOLDER }}/main/.docker.env
 
 
-            cd ${{ secrets.PROJECT_FOLDER }}
+            cd ${{ env.PROJECT_FOLDER }}
             sudo chmod +x docker-compose.down-all.sh    
             sudo chmod +x docker-compose.up-all.sh    
 
