@@ -8,6 +8,19 @@
     "api_version": "/api/v1",
     "url": "http://localhost:3000/api/v1"
   },
+  "microservices": {
+    "shopping": {
+      "url": "http://markey.shopping-service:4000",
+      "api": {
+        "create_shopping_cart": {
+          "endpoint": "/cart/"
+        },
+        "create_shop": {
+          "endpoint": "/shop/create"
+        }
+      }
+    }
+  },
   "cors": {
     "origin": "*",
     "methods": ["GET", "POST", "PUT", "DELETE", "UPDATE"],

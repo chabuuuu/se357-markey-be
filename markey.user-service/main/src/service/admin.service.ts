@@ -71,15 +71,21 @@ export class AdminService extends BaseCrudService<Admin> implements IAdminServic
       throw new BaseError(ErrorCode.NF_01, 'Admin not found');
     }
 
+    console.log('admin', admin);
+
     if (!bcrypt.compareSync(password, admin.password)) {
       throw new BaseError(ErrorCode.AUTH_01, 'Password is incorrect');
     }
+
+    console.log('Password is correct');
 
     const adminRole = await this.roleRepository.findOne({
       filter: {
         name: RoleNameEnum.admin
       }
     });
+
+    console.log('adminRole', adminRole);
 
     const adminPermissions = await adminRole?.permissions;
 
@@ -90,6 +96,8 @@ export class AdminService extends BaseCrudService<Admin> implements IAdminServic
     const secretKey = process.env.LOGIN_SECRET_KEY || '';
 
     const token = jwt.sign(_.toPlainObject(jwtClaim), secretKey, { expiresIn: TIME_CONSTANTS.DAY * 3 });
+
+    console.log('token', token);
 
     return new AdminLoginRes(token);
   }
