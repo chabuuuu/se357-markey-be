@@ -10,6 +10,8 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 //Route
+app.use("/api/v1/payment-service", proxy("http://localhost:3003"));
+app.use("/api/v1/order-service", proxy("http://localhost:3002"));
 app.use("/api/v1/shopping-service", proxy("http://localhost:3001"));
 app.use("/api/v1/user-service", proxy("http://localhost:3000"));
 

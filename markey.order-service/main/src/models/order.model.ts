@@ -35,4 +35,7 @@ export class Order extends BaseEntity {
     cascade: true
   })
   items!: OrderItem[];
+
+  @Column({ name: 'payment_id', nullable: true })
+  paymentId?: string;
 }

@@ -7,6 +7,8 @@ const orderRouter = express.Router();
 
 orderRouter
 
+  .get('/me', authenticateJWT, orderController.getMyOrders.bind(orderController))
+
   .get('/paging', orderController.common.findWithPaging.bind(orderController.common))
 
   .get('/:id', orderController.getById.bind(orderController))

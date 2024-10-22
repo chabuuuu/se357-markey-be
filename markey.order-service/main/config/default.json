@@ -12,6 +12,14 @@
           "endpoint": "/cart/by-shopper"
         }
       }
+    },
+    "payment": {
+      "url": "http://localhost:3003",
+      "api": {
+        "create_payment": {
+          "endpoint": "/payment"
+        }
+      }
     }
   },
   "request_limit": {

@@ -99,14 +99,15 @@ export class ShoppingCartService extends BaseCrudService<ShoppingCart> implement
 
     //Add to cartItem
     const newCartItem = new CartItem();
+    newCartItem.shoppingCartId = cart.id;
     newCartItem.productId = data.productId;
     newCartItem.amount = data.amount;
 
-    cart.cartItems.push(newCartItem);
+    await this.cartItemRepository.create({
+      data: newCartItem
+    });
 
     console.log('cart', cart);
-
-    await this.shoppingCartRepository.save(cart);
 
     return;
   }

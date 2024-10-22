@@ -54,4 +54,44 @@ export class OrderController {
       next(error);
     }
   }
+
+  /**
+   * * GET /order/me
+   */
+  async getMyOrders(req: Request, res: Response, next: NextFunction) {
+    try {
+      const shopper = SessionUtil.getShopperCurrentlyLoggedIn(req);
+
+      const shopperId = shopper.id;
+
+      const result = await this.orderService.findMany({
+        filter: {
+          shopperId: shopperId
+        },
+        order: [
+          {
+            column: 'createAt',
+            direction: 'DESC'
+          }
+        ]
+      });
+
+      return res.send_ok('Orders found', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * GET /order/paid-event/:orderId
+   */
+  async handlePaidEvent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const orderId = req.params.orderId;
+
+      await this.orderService.handlePaidEvent(orderId);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
