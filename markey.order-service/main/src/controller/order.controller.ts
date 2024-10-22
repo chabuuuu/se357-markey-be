@@ -83,13 +83,15 @@ export class OrderController {
   }
 
   /**
-   * * GET /order/paid-event/:orderId
+   * * PUT /order/send-paid-event
    */
   async handlePaidEvent(req: Request, res: Response, next: NextFunction) {
     try {
-      const orderId = req.params.orderId;
+      const data = req.body;
 
-      await this.orderService.handlePaidEvent(orderId);
+      await this.orderService.handlePaidEvent(data);
+
+      return res.send_ok('Order status updated');
     } catch (error) {
       next(error);
     }

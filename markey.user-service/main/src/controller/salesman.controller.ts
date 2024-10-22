@@ -8,7 +8,6 @@ import { ErrorCode } from '@/enums/error-code.enums';
 import { Salesman } from '@/models/salesman.model';
 import { Shop } from '@/models/shop.model';
 import { ISalesmanService } from '@/service/interface/i.salesman.service';
-import { IShopService } from '@/service/interface/i.shop.service';
 import { ITYPES } from '@/types/interface.types';
 import { convertToDto } from '@/utils/dto-convert/convert-to-dto.util';
 import BaseError from '@/utils/error/base.error';
@@ -19,15 +18,12 @@ import { inject, injectable } from 'inversify';
 export class SalesmanController {
   public common: IBaseCrudController<Salesman>;
   private salesmanService: ISalesmanService<Salesman>;
-  private shopService: IShopService<Shop>;
   constructor(
     @inject('SalesmanService') salesmanService: ISalesmanService<Salesman>,
-    @inject(ITYPES.Controller) common: IBaseCrudController<Salesman>,
-    @inject('ShopService') shopService: IShopService<Shop>
+    @inject(ITYPES.Controller) common: IBaseCrudController<Salesman>
   ) {
     this.salesmanService = salesmanService;
     this.common = common;
-    this.shopService = shopService;
   }
 
   /**

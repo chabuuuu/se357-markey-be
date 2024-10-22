@@ -7,6 +7,8 @@ import { IShopperRepository } from '@/repository/interface/i.shopper.repository'
 import { BaseContainer } from '@/container/base.container';
 import { IRoleRepository } from '@/repository/interface/i.role.repository';
 import { roleRepository } from '@/container/role.container';
+import { IShoppingCartRepository } from '@/repository/interface/i.shopping_cart.repository';
+import { shoppingCartRepository } from '@/container/shopping_cart.container';
 
 class ShopperContainer extends BaseContainer {
   constructor() {
@@ -17,6 +19,7 @@ class ShopperContainer extends BaseContainer {
 
     //Import
     this.container.bind<IRoleRepository<any>>('RoleRepository').toConstantValue(roleRepository);
+    this.container.bind<IShoppingCartRepository>('ShoppingCartRepository').toConstantValue(shoppingCartRepository);
   }
 
   export() {

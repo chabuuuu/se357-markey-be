@@ -33,13 +33,18 @@ salesmanRouter
   .post('/register', classValidate(SalesmanRegisterReq), salesmanController.register.bind(salesmanController))
 
   .get('/verify-email-token', salesmanController.verifyEmailToken.bind(salesmanController))
+
   .get('/activation/phone', salesmanController.activatePhoneNumber.bind(salesmanController))
+
   .get(
     '/paging',
     authenticateJWT,
     checkPermission([PERMISSION_CONSTANTS.MANAGE_SALESMAN]),
     salesmanController.common.findWithPaging.bind(salesmanController.common)
   )
+
+  .get('/me', authenticateJWT, salesmanController.getMeDetail.bind(salesmanController))
+
   .get(
     '/:id',
     authenticateJWT,

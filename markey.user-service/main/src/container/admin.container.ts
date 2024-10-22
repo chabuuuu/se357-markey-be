@@ -8,6 +8,8 @@ import { BaseContainer } from '@/container/base.container';
 import { IRoleRepository } from '@/repository/interface/i.role.repository';
 import { RoleRepository } from '@/repository/role.repository';
 import { roleRepository } from '@/container/role.container';
+import { ISalesmanRepository } from '@/repository/interface/i.salesman.repository';
+import { salesmanRepository } from '@/container/salesman.container';
 
 class AdminContainer extends BaseContainer {
   constructor() {
@@ -18,6 +20,7 @@ class AdminContainer extends BaseContainer {
 
     //Import
     this.container.bind<IRoleRepository<any>>('RoleRepository').toConstantValue(roleRepository);
+    this.container.bind<ISalesmanRepository<any>>('SalesmanRepository').toConstantValue(salesmanRepository);
   }
 
   export() {

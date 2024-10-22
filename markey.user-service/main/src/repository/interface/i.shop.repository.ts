@@ -1,3 +1,5 @@
-import { IBaseRepository } from '@/repository/interface/i.base.repository';
+import { CreateShopReq } from '@/dto/shop/create-shop.req';
 
-export interface IShopRepository<T> extends IBaseRepository<T> {}
+export interface IShopRepository {
+  createShop(data: CreateShopReq): Promise<void>;
+}

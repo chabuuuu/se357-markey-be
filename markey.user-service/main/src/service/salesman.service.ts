@@ -27,16 +27,17 @@ import { Role } from '@/models/role.model';
 import { JwtClaimDto } from '@/dto/jwt-claim.dto';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
+import { CreateShopReq } from '@/dto/shop/create-shop.req';
 
 @injectable()
 export class SalesmanService extends BaseCrudService<Salesman> implements ISalesmanService<Salesman> {
   private salesmanRepository: ISalesmanRepository<Salesman>;
-  private shopRepository: IShopRepository<Shop>;
+  private shopRepository: IShopRepository;
   private roleRepository: IRoleRepository<Role>;
 
   constructor(
     @inject('SalesmanRepository') salesmanRepository: ISalesmanRepository<Salesman>,
-    @inject('ShopRepository') shopRepository: IShopRepository<Shop>,
+    @inject('ShopRepository') shopRepository: IShopRepository,
     @inject('RoleRepository') roleRepository: IRoleRepository<Role>
   ) {
     super(salesmanRepository);
@@ -57,6 +58,11 @@ export class SalesmanService extends BaseCrudService<Salesman> implements ISales
       throw new BaseError(ErrorCode.NF_01, 'Salesman not found');
     }
     const salesman = salesmanWithPhone || salesmanWithEmail;
+
+    //Check if salesman is approved or not?
+    if (!salesman!.isApproved) {
+      throw new BaseError(ErrorCode.AUTH_01, 'Salesman is not approved');
+    }
 
     if (!bcrypt.compareSync(password, salesman!.password)) {
       throw new BaseError(ErrorCode.AUTH_01, 'Password is incorrect');
@@ -166,9 +172,18 @@ export class SalesmanService extends BaseCrudService<Salesman> implements ISales
     const { tempUser } = smsActivateCacheDto;
 
     const salesman = convertToDto(SalesmanRegisterReq, tempUser);
-    await this.salesmanRepository.create({
+    const createdSalesman = await this.salesmanRepository.create({
       data: salesman
     });
+
+    //Call shopping service to create shop
+    const createShopReq = new CreateShopReq();
+    createShopReq.salesmanId = createdSalesman.id;
+    createShopReq.name = salesman.shop.name;
+    createShopReq.description = salesman.shop.description;
+    createShopReq.profilePicture = salesman.shop.profilePicture;
+
+    this.shopRepository.createShop(createShopReq);
 
     return 'Activate phone number success, please waiting for admin approve';
   }
@@ -176,15 +191,15 @@ export class SalesmanService extends BaseCrudService<Salesman> implements ISales
   async register(data: SalesmanRegisterReq): Promise<SalesmanRegisterRes> {
     console.log('Registering salesman', data);
 
-    if (
-      await this.shopRepository.exists({
-        filter: {
-          name: data.shop.name
-        }
-      })
-    ) {
-      throw new BaseError(ErrorCode.DUPLICATE_DATA, 'Shop name already exists');
-    }
+    // if (
+    //   await this.shopRepository.exists({
+    //     filter: {
+    //       name: data.shop.name
+    //     }
+    //   })
+    // ) {
+    //   throw new BaseError(ErrorCode.DUPLICATE_DATA, 'Shop name already exists');
+    // }
 
     if (
       await this.salesmanRepository.exists({
@@ -220,19 +235,20 @@ export class SalesmanService extends BaseCrudService<Salesman> implements ISales
         id: salesmanId
       }
     });
-    const shop = await this.shopRepository.findOne({
-      filter: {
-        salesmanId: salesmanId
-      }
-    });
 
-    if (shop) {
-      await this.shopRepository.findOneAndDelete({
-        filter: {
-          id: shop!.id
-        }
-      });
-    }
+    // const shop = await this.shopRepository.findOne({
+    //   filter: {
+    //     salesmanId: salesmanId
+    //   }
+    // });
+
+    // if (shop) {
+    //   await this.shopRepository.findOneAndDelete({
+    //     filter: {
+    //       id: shop!.id
+    //     }
+    //   });
+    // }
 
     return;
   }

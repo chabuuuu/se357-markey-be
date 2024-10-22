@@ -39,4 +39,42 @@ export class ShopController {
       next(error);
     }
   }
+
+  /**
+   * * GET /shop/by-salesman/:salesmanId
+   */
+  async findBySalesman(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { salesmanId } = req.params;
+
+      const shops = await this.shopService.findOne({
+        filter: {
+          salesmanId: salesmanId
+        }
+      });
+
+      res.status(200).send_ok('Get shops by salesmanId success', shops);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * GET /shop/me
+   */
+  async getMyShop(req: Request, res: Response, next: NextFunction) {
+    try {
+      const salesman = SessionUtil.getSalesmanCurrentlyLoggedIn(req);
+
+      const shop = await this.shopService.findOne({
+        filter: {
+          salesmanId: salesman.id
+        }
+      });
+
+      res.status(200).send_ok('Get shop success', shop);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

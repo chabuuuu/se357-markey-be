@@ -3,6 +3,20 @@ import cors from 'cors';
 
 export class GlobalConfig {
   /**
+   * * Microservices config
+   */
+  static microservices: {
+    order: {
+      url: string;
+      api: {
+        send_paid_event: {
+          endpoint: string;
+        };
+      };
+    };
+  } = config.get('microservices');
+
+  /**
    * * Server config
    *   This is config for server such as
    * + host: host of server

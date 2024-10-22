@@ -28,6 +28,10 @@ shopRouter
     shopController.common.update.bind(shopController.common)
   )
 
+  .get('/by-salesman/:salesmanId', shopController.findBySalesman.bind(shopController))
+
+  .get('/me', authenticateJWT, shopController.getMyShop.bind(shopController))
+
   .get('/paging', shopController.common.findWithPaging.bind(shopController.common))
 
   .get('/:id', shopController.common.findOne.bind(shopController.common))

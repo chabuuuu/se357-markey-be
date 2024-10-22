@@ -8,6 +8,9 @@ import express from 'express';
 const adminRouter = express.Router();
 
 adminRouter
+
+  .put('/approve-salesman/:salesmanId', adminController.approveSalesman.bind(adminController))
+
   .get(
     '/me',
     authenticateJWT,

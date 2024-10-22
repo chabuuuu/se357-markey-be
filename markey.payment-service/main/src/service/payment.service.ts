@@ -3,6 +3,7 @@ import { ErrorCode } from '@/enums/error-code.enums';
 import { PaymentMethodEnum } from '@/enums/payment-method.enum';
 import { PaymentStatusEnum } from '@/enums/payment-status.enum';
 import { Payment } from '@/models/payment.model';
+import { IOrderRepository } from '@/repository/interface/i.order.repository';
 import { IPaymentRepository } from '@/repository/interface/i.payment.repository';
 import { BaseCrudService } from '@/service/base/base.service';
 import { IPaymentService } from '@/service/interface/i.payment.service';
@@ -13,10 +14,15 @@ import { inject, injectable } from 'inversify';
 @injectable()
 export class PaymentService extends BaseCrudService<Payment> implements IPaymentService<Payment> {
   private paymentRepository: IPaymentRepository<Payment>;
+  private orderRepository: IOrderRepository;
 
-  constructor(@inject('PaymentRepository') paymentRepository: IPaymentRepository<Payment>) {
+  constructor(
+    @inject('PaymentRepository') paymentRepository: IPaymentRepository<Payment>,
+    @inject('OrderRepository') orderRepository: IOrderRepository
+  ) {
     super(paymentRepository);
     this.paymentRepository = paymentRepository;
+    this.orderRepository = orderRepository;
   }
 
   /**
@@ -62,6 +68,16 @@ export class PaymentService extends BaseCrudService<Payment> implements IPayment
     };
 
     await this.paymentRepository.save(payment);
+
+    //Send paid event to order service
+    this.orderRepository.sendPaidEvent({
+      id: payment.id,
+      orderId: payment.orderId,
+      paymentMethod: PaymentMethodEnum.VNPAY,
+      total: payment.total,
+      paymentInfo: payment.paymentInfo,
+      status: payment.status
+    });
 
     return;
   }

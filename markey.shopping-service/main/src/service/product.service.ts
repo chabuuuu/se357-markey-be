@@ -32,6 +32,12 @@ export class ProductService extends BaseCrudService<Product> implements IProduct
     if (!shop) {
       throw new BaseError(ErrorCode.NF_01, 'Shop not found with given salesmanId: ' + salesmanId);
     }
+
+    //Check if the shop is owned by the salesman
+    if (shop.salesmanId !== salesmanId) {
+      throw new BaseError(ErrorCode.PERMISSION_01, 'You are not the owner of this shop');
+    }
+
     const product = await this.productRepository.create({
       data: {
         ...data,
