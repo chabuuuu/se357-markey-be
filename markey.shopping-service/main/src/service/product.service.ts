@@ -61,6 +61,13 @@ export class ProductService extends BaseCrudService<Product> implements IProduct
       };
     }
 
+    if (filter.categoryId) {
+      where = {
+        ...where,
+        categoryId: filter.categoryId
+      };
+    }
+
     if (filter.sort) {
       sort.push({
         column: filter.sort.by,
