@@ -11,6 +11,7 @@ import { convertToDto } from '@/utils/dto-convert/convert-to-dto.util';
 import { getPagingUtil } from '@/utils/get-paging.util';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
+import { IsNull, Not } from 'typeorm';
 
 @injectable()
 export class ProductController {
@@ -152,6 +153,33 @@ export class ProductController {
       const paging = getPagingUtil(req);
       const filter: FindProductReq = req.body;
       const result = await this.productService.findWithFilter(filter, paging);
+
+      return res.send_ok('Found successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * GET /product/recommend
+   */
+  async recommend(req: Request, res: Response, next: NextFunction) {
+    try {
+      const paging = getPagingUtil(req);
+      const result = await this.productService.findMany({
+        paging: paging,
+        relations: ['category', 'shop'],
+        filter: {
+          ratingAverage: Not(IsNull()) as any
+        },
+        select: ListProductSelect,
+        order: [
+          {
+            column: 'ratingAverage',
+            direction: 'DESC'
+          }
+        ]
+      });
 
       return res.send_ok('Found successfully', result);
     } catch (error) {
