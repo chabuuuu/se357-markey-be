@@ -1,6 +1,7 @@
 import { IBaseCrudController } from '@/controller/interfaces/i.base-curd.controller';
 import { PagingDto } from '@/dto/paging.dto';
 import { CreateProductReq } from '@/dto/product/create-product.req';
+import { FindProductReq } from '@/dto/product/find-product.req';
 import { ListProductSelect } from '@/dto/product/list-product.select';
 import { RoleNameEnum } from '@/enums/role-name.enum';
 import { Product } from '@/models/product.model';
@@ -132,6 +133,25 @@ export class ProductController {
         select: ListProductSelect,
         paging: paging
       });
+
+      return res.send_ok('Found successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * GET /product/with-filter
+   * @param req
+   * @param res
+   * @param next
+   * @returns
+   */
+  async findWithFilter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const paging = getPagingUtil(req);
+      const filter: FindProductReq = req.body;
+      const result = await this.productService.findWithFilter(filter, paging);
 
       return res.send_ok('Found successfully', result);
     } catch (error) {

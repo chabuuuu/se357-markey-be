@@ -7,6 +7,7 @@ import express from 'express';
 const productRouter = express.Router();
 
 productRouter
+  .post('/filter', productController.findWithFilter.bind(productController))
   .post('/', authenticateJWT, classValidate(CreateProductReq), productController.create.bind(productController))
   .get('/by-shop/:shopId', productController.findByShopId.bind(productController))
   .get('/by-category/:categoryId', productController.findByCategoryId.bind(productController))
