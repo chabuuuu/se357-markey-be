@@ -181,7 +181,17 @@ export class ProductController {
         ]
       });
 
-      return res.send_ok('Found successfully', result);
+      const totalRecords = await this.productService.count({
+        filter: {
+          ratingAverage: Not(IsNull()) as any
+        }
+      });
+      const resultWithPaging = {
+        items: result,
+        total: totalRecords
+      };
+
+      return res.send_ok('Found successfully', resultWithPaging);
     } catch (error) {
       next(error);
     }
