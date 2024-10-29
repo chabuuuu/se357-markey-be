@@ -12,6 +12,7 @@ productRouter
   .get('/by-shop/:shopId', productController.findByShopId.bind(productController))
   .get('/by-category/:categoryId', productController.findByCategoryId.bind(productController))
   .get('/paging', productController.findWithPaging.bind(productController))
+  .get('/recommend', productController.recommend.bind(productController))
   .get('/:id', productController.findOne.bind(productController))
   .get('/', productController.findAll.bind(productController))
   .put('/:id', classValidate(UpdateProductReq), productController.common.update.bind(productController.common))
