@@ -8,7 +8,7 @@ import { UpdateResultType } from '@/types/update-result.types';
 import BaseError from '@/utils/error/base.error';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { DeepPartial, IsNull, Not, ObjectLiteral, Repository } from 'typeorm';
+import { DeepPartial, FindOptionsSelect, IsNull, Not, ObjectLiteral, Repository } from 'typeorm';
 
 @injectable()
 export class BaseRepository<T extends ObjectLiteral> implements IBaseRepository<T> {
@@ -85,8 +85,9 @@ export class BaseRepository<T extends ObjectLiteral> implements IBaseRepository<
     paging?: PagingDto;
     order?: RecordOrderType[];
     relations?: string[];
+    select?: FindOptionsSelect<T>;
   }): Promise<T[]> {
-    const { paging, order, relations } = options;
+    const { paging, order, relations, select } = options;
     let { filter } = options;
 
     let skip = undefined;
@@ -117,7 +118,8 @@ export class BaseRepository<T extends ObjectLiteral> implements IBaseRepository<
       take: take,
       skip: skip,
       order: orderObject as any,
-      relations: relations
+      relations: relations,
+      select: select
     });
     return result;
   }

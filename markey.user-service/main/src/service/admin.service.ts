@@ -17,23 +17,73 @@ import _ from 'lodash';
 import bcrypt from 'bcrypt';
 import { ISalesmanRepository } from '@/repository/interface/i.salesman.repository';
 import { Salesman } from '@/models/salesman.model';
+import { IShopperRepository } from '@/repository/interface/i.shopper.repository';
+import { Shopper } from '@/models/shopper.model';
 
 @injectable()
 export class AdminService extends BaseCrudService<Admin> implements IAdminService<Admin> {
   private adminRepository: IAdminRepository<Admin>;
   private roleRepository: IRoleRepository<Role>;
   private salesmanRepository: ISalesmanRepository<Salesman>;
+  private shopperRepository: IShopperRepository<Shopper>;
 
   constructor(
     @inject('AdminRepository') adminRepository: IAdminRepository<Admin>,
     @inject('RoleRepository') roleRepository: IRoleRepository<Role>,
-    @inject('SalesmanRepository') salesmanRepository: ISalesmanRepository<Salesman>
+    @inject('SalesmanRepository') salesmanRepository: ISalesmanRepository<Salesman>,
+    @inject('ShopperRepository') shopperRepository: IShopperRepository<Shopper>
   ) {
     super(adminRepository);
     this.adminRepository = adminRepository;
     this.roleRepository = roleRepository;
     this.salesmanRepository = salesmanRepository;
+    this.shopperRepository = shopperRepository;
   }
+  /**
+   * Block shopper now can't login
+   * @param shopperId
+   */
+  async blockShopper(shopperId: string): Promise<void> {
+    const shopper = await this.shopperRepository.findOne({
+      filter: {
+        id: shopperId
+      }
+    });
+    if (!shopper) {
+      throw new BaseError(ErrorCode.NF_01, 'Shopper not found');
+    }
+    await this.shopperRepository.findOneAndUpdate({
+      filter: { id: shopperId },
+      updateData: {
+        isBlocked: true
+      }
+    });
+
+    return;
+  }
+
+  /**
+   * Block salesman now can't login
+   * @param salesmanId
+   */ async blockSalesman(salesmanId: string): Promise<void> {
+    const salesman = await this.salesmanRepository.findOne({
+      filter: {
+        id: salesmanId
+      }
+    });
+    if (!salesman) {
+      throw new BaseError(ErrorCode.NF_01, 'Salesman not found');
+    }
+    await this.salesmanRepository.findOneAndUpdate({
+      filter: { id: salesmanId },
+      updateData: {
+        isBlocked: true
+      }
+    });
+
+    return;
+  }
+
   /**
    * * Approve for salesman now can login
    * @param salesmanId

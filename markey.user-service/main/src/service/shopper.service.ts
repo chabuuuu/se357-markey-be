@@ -61,6 +61,11 @@ export class ShopperService extends BaseCrudService<Shopper> implements IShopper
     }
     const shopper = shopperWithPhone || shopperWithEmail || shopperWithUsername;
 
+    //Check if shopper is blocked or not
+    if (shopper!.isBlocked) {
+      throw new BaseError(ErrorCode.AUTH_01, 'Shopper is blocked');
+    }
+
     if (!bcrypt.compareSync(password, shopper!.password)) {
       throw new BaseError(ErrorCode.AUTH_01, 'Password is incorrect');
     }
