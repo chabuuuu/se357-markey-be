@@ -1,7 +1,11 @@
 export const PostListSelect = {
   id: true,
+  title: true,
   thumbnail: true,
-  category: true,
+  category: {
+    id: true,
+    name: true
+  },
   tags: true,
   lang_type: true,
   shop: {

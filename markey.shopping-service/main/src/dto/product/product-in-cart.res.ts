@@ -5,4 +5,8 @@ export class ProductInCartRes {
   price!: number;
   picture?: string[];
   amount!: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  createdBy?: string;
+  updatedBy?: string;
 }

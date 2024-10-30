@@ -20,7 +20,6 @@ export class BaseRepository<T extends ObjectLiteral> implements IBaseRepository<
   ) {
     this.ormRepository = ormRepository;
   }
-
   private hasDeleteAtColumn(): boolean {
     return this.ormRepository.metadata.columns.some((column) => column.propertyName === 'deleteAt');
   }
@@ -45,6 +44,18 @@ export class BaseRepository<T extends ObjectLiteral> implements IBaseRepository<
     }
     (recordToDelete as any).deleteAt = new Date();
     await this.ormRepository.save(recordToDelete);
+  }
+
+  async findOneAndHardDelete(options: { filter: Partial<T> }): Promise<void> {
+    const { filter } = options;
+    const recordToDelete = await this.ormRepository.findOne({
+      where: filter
+    });
+    if (!recordToDelete) {
+      throw new BaseError(ErrorCode.NF_01, 'Record not found with given filter: ' + JSON.stringify(filter));
+    }
+
+    await this.ormRepository.delete(filter);
   }
 
   async findOneAndUpdate(options: { filter: Partial<T>; updateData: Partial<T> }): Promise<void> {

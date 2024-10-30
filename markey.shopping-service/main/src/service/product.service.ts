@@ -47,6 +47,13 @@ export class ProductService extends BaseCrudService<Product> implements IProduct
       };
     }
 
+    if (filter.shopId) {
+      where = {
+        ...where,
+        shopId: filter.shopId
+      };
+    }
+
     if (filter.priceFrom) {
       where = {
         ...where,

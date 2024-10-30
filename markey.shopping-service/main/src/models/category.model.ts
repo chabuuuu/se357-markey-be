@@ -1,4 +1,5 @@
 import { BaseEntity } from '@/models/base_model.model';
+import { Post } from '@/models/post.model';
 import { Product } from '@/models/product.model';
 import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -21,4 +22,7 @@ export class Category extends BaseEntity {
 
   @OneToMany(() => Product, (product) => product.category)
   products!: Promise<Product[]>;
+
+  @OneToMany(() => Post, (post) => post.category)
+  posts!: Promise<Post[]>;
 }

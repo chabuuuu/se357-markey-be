@@ -104,4 +104,19 @@ export class ShoppingCartController {
       next(error);
     }
   }
+
+  /**
+   * * GET /cart/me/group-by-created-date
+   */
+  async getMyCartGroupByCreatedDate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const shopper = SessionUtil.getShopperCurrentlyLoggedIn(req);
+
+      const result = await this.shoppingCartService.getCartGroupByCreatedDate(shopper.id);
+
+      res.send_ok('Lấy thông tin giỏ hàng thành công', result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

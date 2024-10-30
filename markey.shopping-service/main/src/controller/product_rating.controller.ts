@@ -65,11 +65,7 @@ export class ProductRatingController {
    */
   async findByProductId(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.productRatingService.findMany({
-        filter: {
-          productId: req.params.productId
-        }
-      });
+      const result = await this.productRatingService.findByProductId(req.params.productId);
 
       return res.send_ok('Found successfully', result);
     } catch (error) {
