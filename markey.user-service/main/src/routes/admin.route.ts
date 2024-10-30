@@ -9,6 +9,10 @@ const adminRouter = express.Router();
 
 adminRouter
 
+  .put('/block-salesman/:salesmanId', adminController.blockSalesman.bind(adminController))
+
+  .put('/block-shopper/:shopperId', adminController.blockShopper.bind(adminController))
+
   .put('/approve-salesman/:salesmanId', adminController.approveSalesman.bind(adminController))
 
   .get(

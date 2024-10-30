@@ -3,6 +3,7 @@ import { shopperController } from '@/container/shopper.container';
 import { EmailActivateReq } from '@/dto/email-activate.req';
 import { ShopperLoginReq } from '@/dto/shopper/shopper-login.req';
 import { ShopperRegisterReq } from '@/dto/shopper/shopper-register.req';
+import { ShopperUpdateReq } from '@/dto/shopper/shopper-update.req';
 import { authenticateJWT } from '@/middleware/authenticate.middleware';
 import { checkPermission } from '@/middleware/check-permission.middleware';
 import { classValidate } from '@/middleware/class-validate.middleware';
@@ -10,6 +11,8 @@ import express from 'express';
 const shopperRouter = express.Router();
 
 shopperRouter
+  .put('/:id', classValidate(ShopperUpdateReq), shopperController.common.update.bind(shopperController.common))
+
   .post('/register', classValidate(ShopperRegisterReq), shopperController.register.bind(shopperController))
 
   .post(

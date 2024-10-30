@@ -2,7 +2,7 @@ import { PagingDto } from '@/dto/paging.dto';
 import { DeleteResultType } from '@/types/delete-result.types';
 import { RecordOrderType } from '@/types/record-order.types';
 import { UpdateResultType } from '@/types/update-result.types';
-import { DeepPartial } from 'typeorm';
+import { DeepPartial, FindOptionsSelect } from 'typeorm';
 
 export interface IBaseRepository<T> {
   /**
@@ -44,6 +44,7 @@ export interface IBaseRepository<T> {
     paging?: PagingDto;
     order?: RecordOrderType[];
     relations?: string[];
+    select?: FindOptionsSelect<T>;
   }): Promise<T[]>;
 
   /**

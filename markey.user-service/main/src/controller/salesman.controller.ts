@@ -1,5 +1,7 @@
 import { IBaseCrudController } from '@/controller/interfaces/i.base-curd.controller';
+import { PagingDto } from '@/dto/paging.dto';
 import { SalesmanDetailRes } from '@/dto/salesman/salesman-detail.res';
+import { SearchSalesmanReq } from '@/dto/salesman/salesman-filter.res';
 import { SalesmanLoginReq } from '@/dto/salesman/salesman-login.req';
 import { SalesmanLoginRes } from '@/dto/salesman/salesman-login.res';
 import { SalesmanRegisterReq } from '@/dto/salesman/salesman-register.req';
@@ -207,6 +209,22 @@ export class SalesmanController {
         updateData: data
       });
       res.send_ok('Update success', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * GET /api/salesman/filter
+   */
+  async findWithFilter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const filter: SearchSalesmanReq = req.body;
+      const { page, rpp } = req.query;
+      const paging = new PagingDto(Number(page), Number(rpp));
+
+      const result = await this.salesmanService.findWithFilter(filter, paging);
+      res.send_ok('Filter success', result);
     } catch (error) {
       next(error);
     }

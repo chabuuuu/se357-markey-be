@@ -67,4 +67,7 @@ export class Shopper extends BaseEntity {
     name: 'email_verified'
   })
   emailVerified!: boolean;
+
+  @Column({ default: false, name: 'is_blocked' })
+  isBlocked!: boolean;
 }

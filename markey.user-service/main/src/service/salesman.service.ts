@@ -28,6 +28,12 @@ import { JwtClaimDto } from '@/dto/jwt-claim.dto';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import { CreateShopReq } from '@/dto/shop/create-shop.req';
+import { PagingDto } from '@/dto/paging.dto';
+import { SearchSalesmanReq } from '@/dto/salesman/salesman-filter.res';
+import { RecordOrderType } from '@/types/record-order.types';
+import { Like } from 'typeorm';
+import { PagingResponseDto } from '@/dto/paging-response.dto';
+import { SalesmanListSelect } from '@/dto/salesman/salesman-list.select';
 
 @injectable()
 export class SalesmanService extends BaseCrudService<Salesman> implements ISalesmanService<Salesman> {
@@ -45,6 +51,61 @@ export class SalesmanService extends BaseCrudService<Salesman> implements ISales
     this.shopRepository = shopRepository;
     this.roleRepository = roleRepository;
   }
+
+  async findWithFilter(filter: SearchSalesmanReq, paging: PagingDto): Promise<PagingResponseDto<Salesman>> {
+    let where = {};
+    const sort: RecordOrderType[] = [];
+    if (filter.sort) {
+      sort.push({
+        column: filter.sort.by,
+        direction: filter.sort.order
+      });
+    }
+
+    if (filter.fullname) {
+      where = {
+        ...where,
+        fullname: Like(`%${filter.fullname}%`)
+      };
+    }
+
+    if (filter.id) {
+      where = {
+        ...where,
+        id: filter.id
+      };
+    }
+
+    if (filter.isApproved) {
+      where = {
+        ...where,
+        isApproved: filter.isApproved
+      };
+    }
+
+    if (filter.isBlocked) {
+      where = {
+        ...where,
+        isBlocked: filter.isBlocked
+      };
+    }
+
+    const salesman = await this.salesmanRepository.findMany({
+      filter: where,
+      paging: paging,
+      order: sort,
+      select: SalesmanListSelect
+    });
+
+    const totalRecords = await this.baseRepository.count({
+      filter: where
+    });
+    return {
+      items: salesman,
+      total: totalRecords
+    };
+  }
+
   async login(data: SalesmanLoginReq): Promise<SalesmanLoginRes> {
     const { phoneNumberOrEmail, password } = data;
     const salesmanWithPhone = await this.salesmanRepository.findOne({
@@ -62,6 +123,11 @@ export class SalesmanService extends BaseCrudService<Salesman> implements ISales
     //Check if salesman is approved or not?
     if (!salesman!.isApproved) {
       throw new BaseError(ErrorCode.AUTH_01, 'Salesman is not approved');
+    }
+
+    //Check if salesman is blocked or not?
+    if (salesman!.isBlocked) {
+      throw new BaseError(ErrorCode.AUTH_01, 'Salesman is blocked');
     }
 
     if (!bcrypt.compareSync(password, salesman!.password)) {
