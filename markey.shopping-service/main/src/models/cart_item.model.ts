@@ -1,9 +1,10 @@
+import { BaseEntity } from '@/models/base_model.model';
 import { Product } from '@/models/product.model';
 import { ShoppingCart } from '@/models/shopping_cart.model';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('cart_items')
-export class CartItem {
+export class CartItem extends BaseEntity {
   @PrimaryColumn({ name: 'shopping_cart_id' })
   shoppingCartId!: string;
 

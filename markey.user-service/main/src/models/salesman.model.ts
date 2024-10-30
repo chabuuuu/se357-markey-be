@@ -93,6 +93,9 @@ export class Salesman extends BaseEntity {
   })
   isApproved!: boolean;
 
+  @Column({ default: false, name: 'is_blocked' })
+  isBlocked!: boolean;
+
   // //fks
   // @OneToOne(() => Shop, (shop) => shop.salesman, { cascade: true })
   // shop!: Shop;

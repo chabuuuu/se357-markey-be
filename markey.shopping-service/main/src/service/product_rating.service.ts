@@ -1,4 +1,5 @@
 import { CreateRatingReq } from '@/dto/rating/create-rating.req';
+import { GetRatingByProductRes } from '@/dto/rating/get-rating-by-product.res';
 import { ErrorCode } from '@/enums/error-code.enums';
 import { Product } from '@/models/product.model';
 import { ProductRating } from '@/models/product_rating.model';
@@ -24,6 +25,53 @@ export class ProductRatingService
     super(productRatingRepository);
     this.productRatingRepository = productRatingRepository;
     this.productRepository = productRepository;
+  }
+
+  /**
+   * Get tất cả đánh giá của sản phẩm ( đồng thời trả về thêm số lượng rating 5 sao, 4 sao,..., 1 sao của sản phẩm đó)
+   * @param productId
+   */
+  async findByProductId(productId: string): Promise<GetRatingByProductRes> {
+    const product = await this.productRepository.findOne({
+      filter: {
+        id: productId
+      }
+    });
+
+    if (!product) {
+      throw new BaseError(ErrorCode.NF_01, 'Product not found');
+    }
+
+    const ratings = await this.productRatingRepository.findMany({
+      filter: {
+        productId: productId
+      }
+    });
+
+    const ratingCount = {
+      5: 0,
+      4: 0,
+      3: 0,
+      2: 0,
+      1: 0
+    };
+
+    ratings.forEach((rating) => {
+      const key = rating.rating as 1 | 2 | 3 | 4 | 5;
+      ratingCount[key]++;
+    });
+
+    const result = new GetRatingByProductRes();
+
+    result.ratings = ratings;
+    result.totalRating1 = ratingCount[1];
+    result.totalRating2 = ratingCount[2];
+    result.totalRating3 = ratingCount[3];
+    result.totalRating4 = ratingCount[4];
+    result.totalRating5 = ratingCount[5];
+    result.average = product.ratingAverage;
+
+    return result;
   }
 
   /**

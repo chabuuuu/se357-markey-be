@@ -16,4 +16,6 @@ export class FindProductReq {
   aboveRating?: number;
 
   categoryId?: string;
+
+  shopId?: string;
 }

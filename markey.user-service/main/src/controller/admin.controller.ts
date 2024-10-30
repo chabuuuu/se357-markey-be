@@ -79,4 +79,30 @@ export class AdminController {
       next(error);
     }
   }
+
+  /**
+   * * PUT /admin/block-salesman/:salesmanId
+   */
+  async blockSalesman(req: Request, res: Response, next: NextFunction) {
+    try {
+      const salesmanId = req.params.salesmanId;
+      await this.adminService.blockSalesman(salesmanId);
+      res.send_ok('Block salesman success');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * PUT /admin/block-shopper/:shopperId
+   */
+  async blockShopper(req: Request, res: Response, next: NextFunction) {
+    try {
+      const shopperId = req.params.shopperId;
+      await this.adminService.blockShopper(shopperId);
+      res.send_ok('Block shopper success');
+    } catch (error) {
+      next(error);
+    }
+  }
 }

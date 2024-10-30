@@ -1,4 +1,5 @@
 import { AddToCartReq } from '@/dto/cart/add-to-cart.req';
+import { GetCartGroupByCreatedAt } from '@/dto/cart/get-cart-group-by-created-date.res';
 import { GetCartRes } from '@/dto/cart/get-cart.res';
 import { ProductInCartRes } from '@/dto/product/product-in-cart.res';
 import { CartItem } from '@/models/cart_item.model';
@@ -20,6 +21,67 @@ export class ShoppingCartService extends BaseCrudService<ShoppingCart> implement
     super(shoppingCartRepository);
     this.shoppingCartRepository = shoppingCartRepository;
     this.cartItemRepository = cartItemRepository;
+  }
+
+  async getCartGroupByCreatedDate(shopperId: string): Promise<GetCartGroupByCreatedAt> {
+    const groupByMap = new Map<Date, Array<ProductInCartRes>>();
+
+    const cart = await this.shoppingCartRepository.findOne({
+      filter: {
+        shopperId: shopperId
+      },
+      relations: ['cartItems']
+    });
+
+    const result = new GetCartGroupByCreatedAt();
+    if (!cart) {
+      return result;
+    }
+
+    let total = 0;
+
+    cart.cartItems.forEach((item) => {
+      const productInCart = new ProductInCartRes();
+      productInCart.id = item.productId;
+      productInCart.amount = item.amount;
+      productInCart.price = item.product.price;
+      productInCart.description = item.product.description;
+      productInCart.name = item.product.name;
+      productInCart.picture = item.product.picture;
+      productInCart.createdAt = item.createAt;
+      productInCart.updatedAt = item.updateAt;
+      productInCart.createdBy = item.createBy;
+      productInCart.updatedBy = item.updateBy;
+
+      const productInCarts = groupByMap.get(item.createAt) || [];
+
+      productInCarts.push(productInCart);
+
+      groupByMap.set(item.createAt, productInCarts);
+
+      //Tính tổng tiền
+      total += item.amount * item.product.price;
+    });
+
+    console.log('groupByMap', groupByMap);
+
+    const groupByResponse: {
+      addedAt: Date;
+      products: ProductInCartRes[];
+    }[] = [];
+
+    groupByMap.forEach((value, key) => {
+      groupByResponse.push({
+        addedAt: key,
+        products: value
+      });
+    });
+
+    result.group = groupByResponse;
+    result.total = total;
+    result.shoppingCartId = cart.id;
+
+    return result;
   }
 
   async getCart(shopperId: string): Promise<GetCartRes> {
@@ -46,6 +108,10 @@ export class ShoppingCartService extends BaseCrudService<ShoppingCart> implement
       productInCart.description = item.product.description;
       productInCart.name = item.product.name;
       productInCart.picture = item.product.picture;
+      productInCart.createdAt = item.createAt;
+      productInCart.updatedAt = item.updateAt;
+      productInCart.createdBy = item.createBy;
+      productInCart.updatedBy = item.updateBy;
 
       productInCarts.push(productInCart);
 
@@ -80,15 +146,29 @@ export class ShoppingCartService extends BaseCrudService<ShoppingCart> implement
       }
     });
 
+    console.log('cartItemWithSameProduct', cartItemWithSameProduct);
+
     //Nếu có sản phẩm trong giỏ hàng rồi thì cập nhật số lượng
     if (cartItemWithSameProduct) {
+      //Nếu user truyền vào amount là 0 => xóa sản phẩm khỏi giỏ hàng
+      if (data.amount === 0) {
+        await this.cartItemRepository.findOneAndHardDelete({
+          filter: {
+            shoppingCartId: cart.id,
+            productId: data.productId
+          }
+        });
+
+        return;
+      }
+
       await this.cartItemRepository.findOneAndUpdate({
         filter: {
           shoppingCartId: cart.id,
           productId: data.productId
         },
         updateData: {
-          amount: cartItemWithSameProduct.amount + data.amount
+          amount: data.amount
         }
       });
 

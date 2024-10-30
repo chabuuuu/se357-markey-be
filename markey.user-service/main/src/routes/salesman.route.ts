@@ -1,6 +1,7 @@
 import { PERMISSION_CONSTANTS } from '@/constants/permission.constants';
 import { salesmanController } from '@/container/salesman.container';
 import { EmailActivateReq } from '@/dto/email-activate.req';
+import { SearchSalesmanReq } from '@/dto/salesman/salesman-filter.res';
 import { SalesmanLoginReq } from '@/dto/salesman/salesman-login.req';
 import { SalesmanRegisterReq } from '@/dto/salesman/salesman-register.req';
 import { authenticateJWT } from '@/middleware/authenticate.middleware';
@@ -22,6 +23,8 @@ salesmanRouter
     checkPermission([PERMISSION_CONSTANTS.MANAGE_SALESMAN]),
     salesmanController.approve.bind(salesmanController)
   )
+
+  .post('/filter', salesmanController.findWithFilter.bind(salesmanController))
 
   .post('/login', classValidate(SalesmanLoginReq), salesmanController.login.bind(salesmanController))
   .post(

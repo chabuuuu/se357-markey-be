@@ -25,10 +25,11 @@ class ShopperContainer extends BaseContainer {
   export() {
     const shopperController = this.container.get<ShopperController>(ShopperController);
     const shopperService = this.container.get<IShopperService<any>>('ShopperService');
-    return { shopperController, shopperService };
+    const shopperRepository = this.container.get<IShopperRepository<any>>('ShopperRepository');
+    return { shopperController, shopperService, shopperRepository };
   }
 }
 
 const shopperContainer = new ShopperContainer();
-const { shopperController, shopperService } = shopperContainer.export();
-export { shopperController, shopperService };
+const { shopperController, shopperService, shopperRepository } = shopperContainer.export();
+export { shopperController, shopperService, shopperRepository };
