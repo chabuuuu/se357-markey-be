@@ -17,6 +17,13 @@ shoppingCartRouter
     shoppingCartController.addToCart.bind(shoppingCartController)
   )
   .get('/by-shopper/:shopperId', shoppingCartController.getCartByShopper.bind(shoppingCartController))
+
+  .get(
+    '/me/group-by-created-date',
+    authenticateJWT,
+    shoppingCartController.getMyCartGroupByCreatedDate.bind(shoppingCartController)
+  )
+
   .get('/me', authenticateJWT, shoppingCartController.getMyCart.bind(shoppingCartController));
 
 export default shoppingCartRouter;

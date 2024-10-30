@@ -1,27 +1,22 @@
-import { PostCategoryEnum } from '@/enums/post-category.enum';
 import { PostLangTypeEnum } from '@/enums/post-lang-type.enum';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
-export class CreatePostReq {
+export class UpdatePostReq {
   @IsOptional()
   @IsString()
   thumbnail?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   categoryId!: string;
 
   @IsOptional()
   tags?: string[];
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   content!: string;
 
+  @IsOptional()
   @IsEnum(PostLangTypeEnum)
   lang_type!: string;
-
-  //Genrate later
-  shopId!: string;
-
-  createBy!: string;
 }

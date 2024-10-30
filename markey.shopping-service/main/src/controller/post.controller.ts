@@ -2,6 +2,7 @@ import { IBaseCrudController } from '@/controller/interfaces/i.base-curd.control
 import { JwtClaimDto } from '@/dto/jwt-claim.dto';
 import { PagingDto } from '@/dto/paging.dto';
 import { PostListSelect } from '@/dto/post/post-lis.select';
+import { SearchPostReq } from '@/dto/post/search-post.req';
 import { ErrorCode } from '@/enums/error-code.enums';
 import { RoleNameEnum } from '@/enums/role-name.enum';
 import { Post } from '@/models/post.model';
@@ -57,7 +58,7 @@ export class PostController {
           shopId: shopId
         },
         select: PostListSelect,
-        relations: ['shop']
+        relations: ['shop', 'category']
       });
 
       return res.send_ok('Get successfully', result);
@@ -81,7 +82,7 @@ export class PostController {
         },
         select: PostListSelect,
         paging: paging,
-        relations: ['shop']
+        relations: ['shop', 'category']
       });
 
       return res.send_ok('Get successfully', result);
@@ -102,7 +103,7 @@ export class PostController {
 
       const result = await this.postService.findOne({
         filter: { id: id },
-        relations: ['shop']
+        relations: ['shop', 'category']
       });
 
       return res.send_ok('Found successfully', result);
@@ -117,7 +118,8 @@ export class PostController {
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.postService.findMany({
-        select: PostListSelect
+        select: PostListSelect,
+        relations: ['shop', 'category']
       });
 
       return res.send_ok('Found successfully', result!);
@@ -139,6 +141,24 @@ export class PostController {
       await this.postService.deletePostById(salesmanId, postId);
 
       return res.send_ok('Deleted successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * GET /post/filter
+   */
+  async findWithFilter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { page, rpp } = req.query;
+      const paging = new PagingDto(Number(page), Number(rpp));
+
+      const filter: SearchPostReq = req.body;
+
+      const result = await this.postService.findWithFilter(filter, paging);
+
+      return res.send_ok('Found successfully', result);
     } catch (error) {
       next(error);
     }
