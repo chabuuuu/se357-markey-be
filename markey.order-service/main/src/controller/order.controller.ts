@@ -1,7 +1,11 @@
 import { IBaseCrudController } from '@/controller/interfaces/i.base-curd.controller';
+import { FindOrderWithFilterReq } from '@/dto/order/find-order-with-filter.req';
+import { UpdateOrderStatus } from '@/dto/order/update-status-order.req';
+import { OrderStatusEnum } from '@/enums/order-status.enum';
 import { Order } from '@/models/order.model';
 import { IOrderService } from '@/service/interface/i.order.service';
 import { ITYPES } from '@/types/interface.types';
+import { getEnumValue } from '@/utils/get-enum-value.util';
 import { getPagingUtil } from '@/utils/get-paging.util';
 import { SessionUtil } from '@/utils/session-util';
 import { NextFunction, Request, Response } from 'express';
@@ -92,6 +96,46 @@ export class OrderController {
       await this.orderService.handlePaidEvent(data);
 
       return res.send_ok('Order status updated');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * PUT /order/status/:orderId
+   */
+  async changeOrderStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data: UpdateOrderStatus = req.body;
+      const status = getEnumValue(OrderStatusEnum, data.status);
+      const orderId = req.params.id;
+      await this.orderService.findOneAndUpdate({
+        filter: {
+          id: orderId
+        },
+        updateData: {
+          status: status
+        }
+      });
+
+      return res.send_ok('Order status updated');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * POST /order/filter
+   */
+  async findWithFilter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data: FindOrderWithFilterReq = req.body;
+
+      const paging = getPagingUtil(req);
+
+      const result = await this.orderService.findWithFilter(data, paging);
+
+      res.send_ok('Orders found', result);
     } catch (error) {
       next(error);
     }

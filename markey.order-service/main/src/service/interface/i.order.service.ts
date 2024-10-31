@@ -1,10 +1,19 @@
 import { CreateOrderReq } from '@/dto/order/create-order.req';
+import { FindOrderWithFilterReq } from '@/dto/order/find-order-with-filter.req';
+import { PagingResponseDto } from '@/dto/paging-response.dto';
+import { PagingDto } from '@/dto/paging.dto';
 import { PaymentCreatedEventDto } from '@/dto/payment/payment-created-event.dto';
 import { Order } from '@/models/order.model';
 import { IBaseCrudService } from '@/service/interface/i.base.service';
 import { BaseModelType } from '@/types/base-model.types';
 
 export interface IOrderService<T extends BaseModelType> extends IBaseCrudService<T> {
+  /**
+   * * Find order with filter
+   * @param data
+   */
+  findWithFilter(filter: FindOrderWithFilterReq, paging: PagingDto): Promise<PagingResponseDto<Order>>;
+
   /**
    * * Handle paid event from payment service
    * This will handle the paid event from payment service
