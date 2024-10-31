@@ -4,6 +4,7 @@ import { ShopperLoginReq } from '@/dto/shopper/shopper-login.req';
 import { ShopperLoginRes } from '@/dto/shopper/shopper-login.res';
 import { ShopperPagingRes } from '@/dto/shopper/shopper-paging.res';
 import { ShopperRegisterReq } from '@/dto/shopper/shopper-register.req';
+import { ShopperValidateRegisterReq } from '@/dto/shopper/shopper-valiate-registr.req';
 import { ShopperRes } from '@/dto/shopper/shopper.res';
 import { ErrorCode } from '@/enums/error-code.enums';
 import { Shopper } from '@/models/shopper.model';
@@ -39,6 +40,23 @@ export class ShopperController {
       next(error);
     }
   }
+
+  /**
+   * * Check register info exists
+   * * GET /shopper/register/validation
+   */
+  async validationRegister(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data: ShopperValidateRegisterReq = req.body;
+
+      const result = await this.shopperService.validationRegister(data);
+
+      res.send_ok('Validation success');
+    } catch (error) {
+      next(error);
+    }
+  }
+
   /**
    * * GET /shopper/activation/phone/?phoneNumber=xxx&code=xxx
    */
