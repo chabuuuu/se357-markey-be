@@ -26,6 +26,7 @@ import _ from 'lodash';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
 import { IShoppingCartRepository } from '@/repository/interface/i.shopping_cart.repository';
+import { ShopperValidateRegisterReq } from '@/dto/shopper/shopper-valiate-registr.req';
 
 @injectable()
 export class ShopperService extends BaseCrudService<Shopper> implements IShopperService<Shopper> {
@@ -42,6 +43,32 @@ export class ShopperService extends BaseCrudService<Shopper> implements IShopper
     this.shopperRepository = shopperRepository;
     this.roleRepository = roleRepository;
     this.shoppingCartRepository = shoppingCartRepository;
+  }
+
+  /**
+   * Check if email or phone number exists
+   * @param data
+   */
+  async validationRegister(data: ShopperValidateRegisterReq): Promise<void> {
+    if (
+      await this.shopperRepository.exists({
+        filter: {
+          email: data.email
+        }
+      })
+    ) {
+      throw new BaseError(ErrorCode.DUPLICATE_DATA, 'Email already exists');
+    }
+
+    if (
+      await this.shopperRepository.exists({
+        filter: {
+          phoneNumber: data.phoneNumber
+        }
+      })
+    ) {
+      throw new BaseError(ErrorCode.DUPLICATE_DATA, 'Phone number already exists');
+    }
   }
 
   async login(data: ShopperLoginReq): Promise<ShopperLoginRes> {
