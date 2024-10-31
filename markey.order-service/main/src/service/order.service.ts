@@ -1,4 +1,7 @@
 import { CreateOrderReq } from '@/dto/order/create-order.req';
+import { FindOrderWithFilterReq } from '@/dto/order/find-order-with-filter.req';
+import { PagingResponseDto } from '@/dto/paging-response.dto';
+import { PagingDto } from '@/dto/paging.dto';
 import { CreatePaymentReq } from '@/dto/payment/create-payment.req';
 import { PaymentCreatedEventDto } from '@/dto/payment/payment-created-event.dto';
 import { ProductDto } from '@/dto/product.dto';
@@ -11,7 +14,10 @@ import { IOrderRepository } from '@/repository/interface/i.order.repository';
 import { IPaymentRepository } from '@/repository/interface/i.payment.repository';
 import { BaseCrudService } from '@/service/base/base.service';
 import { IOrderService } from '@/service/interface/i.order.service';
+import { RecordOrderType } from '@/types/record-order.types';
+import { getEnumValue } from '@/utils/get-enum-value.util';
 import { inject, injectable } from 'inversify';
+import { LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm';
 
 @injectable()
 export class OrderService extends BaseCrudService<Order> implements IOrderService<Order> {
@@ -28,6 +34,78 @@ export class OrderService extends BaseCrudService<Order> implements IOrderServic
     this.orderRepository = orderRepository;
     this.cartRepository = cartRepository;
     this.paymentRepository = paymentRepository;
+  }
+  /**
+   * * Find order with filter
+   * @param filter
+   * @param paging
+   */
+  async findWithFilter(filter: FindOrderWithFilterReq, paging: PagingDto): Promise<PagingResponseDto<Order>> {
+    let where = {};
+    const sort: RecordOrderType[] = [];
+
+    if (filter.sort) {
+      sort.push({
+        column: filter.sort.by,
+        direction: filter.sort.order
+      });
+    }
+
+    if (filter.id) {
+      where = {
+        ...where,
+        id: filter.id
+      };
+    }
+
+    if (filter.status) {
+      where = {
+        ...where,
+        status: getEnumValue(OrderStatusEnum, filter.status)
+      };
+    }
+
+    if (filter.address) {
+      where = {
+        ...where,
+        address: Like(`%${filter.address}%`)
+      };
+    }
+
+    if (filter.shopperId) {
+      where = {
+        ...where,
+        shopperId: filter.shopperId
+      };
+    }
+
+    if (filter.totalFrom) {
+      where = {
+        ...where,
+        total: MoreThanOrEqual(filter.totalFrom)
+      };
+    }
+
+    if (filter.totalTo) {
+      where = {
+        ...where,
+        total: LessThanOrEqual(filter.totalTo)
+      };
+    }
+
+    const orders = await this.orderRepository.findMany({
+      filter: where,
+      paging: paging,
+      order: sort
+    });
+
+    const totalRecords = await this.baseRepository.count({
+      filter: where
+    });
+    return {
+      items: orders,
+      total: totalRecords
+    };
   }
 
   /**
