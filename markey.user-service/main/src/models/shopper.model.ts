@@ -1,3 +1,4 @@
+import { GenderTypeEnum } from '@/constants/gender-type.enum';
 import { BaseEntity } from '@/models/base-model.model';
 import { ShoppingCart } from '@/models/shopping-cart.model';
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -41,6 +42,13 @@ export class Shopper extends BaseEntity {
     nullable: true
   })
   address?: string;
+
+  @Column({
+    type: 'enum',
+    enum: GenderTypeEnum,
+    default: GenderTypeEnum.OTHER
+  })
+  gender!: string;
 
   @Column({
     type: 'varchar',

@@ -21,6 +21,9 @@ export class ShopperRegisterReq {
   fullname!: string;
 
   @IsOptional()
+  gender?: string;
+
+  @IsOptional()
   @IsString()
   @MaxLength(100)
   @Expose()
