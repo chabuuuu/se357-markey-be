@@ -79,14 +79,11 @@ export class ShopperService extends BaseCrudService<Shopper> implements IShopper
     const shopperWithEmail = await this.shopperRepository.findOne({
       filter: { email: phoneNumberOrEmail, emailVerified: true }
     });
-    const shopperWithUsername = await this.shopperRepository.findOne({
-      filter: { username: phoneNumberOrEmail }
-    });
 
-    if (!shopperWithPhone && !shopperWithEmail && !shopperWithUsername) {
+    if (!shopperWithPhone && !shopperWithEmail) {
       throw new BaseError(ErrorCode.NF_01, 'Shopper not found');
     }
-    const shopper = shopperWithPhone || shopperWithEmail || shopperWithUsername;
+    const shopper = shopperWithPhone || shopperWithEmail;
 
     //Check if shopper is blocked or not
     if (shopper!.isBlocked) {
@@ -139,16 +136,6 @@ export class ShopperService extends BaseCrudService<Shopper> implements IShopper
       })
     ) {
       throw new BaseError(ErrorCode.DUPLICATE_DATA, 'Phone number already exists');
-    }
-
-    if (
-      await this.shopperRepository.exists({
-        filter: {
-          username: data.username
-        }
-      })
-    ) {
-      throw new BaseError(ErrorCode.DUPLICATE_DATA, 'Username already exists');
     }
 
     data.password = bcrypt.hashSync(data.password, 10);
