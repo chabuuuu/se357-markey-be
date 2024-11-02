@@ -5,10 +5,11 @@ import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString,
 
 @IsNotEmptyAll
 export class ShopperRegisterReq {
+  @IsOptional()
   @IsString()
   @MaxLength(50)
   @Expose()
-  username!: string;
+  username?: string;
 
   @IsString()
   @Expose()
@@ -19,19 +20,21 @@ export class ShopperRegisterReq {
   @Expose()
   fullname!: string;
 
+  @IsOptional()
   @IsString()
   @MaxLength(100)
   @Expose()
-  address!: string;
+  address?: string;
 
   @IsString()
   @IsPhoneNumber()
   @Expose()
   phoneNumber!: string;
 
+  @IsOptional()
   @IsDateString()
   @Expose()
-  birthdate!: Date;
+  birthdate?: Date;
 
   @IsString()
   @IsEmail()

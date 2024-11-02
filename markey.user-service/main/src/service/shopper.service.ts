@@ -107,7 +107,7 @@ export class ShopperService extends BaseCrudService<Shopper> implements IShopper
 
     const shopperPermissionCodes = shopperPermissions!.map((permission) => permission.code) || [''];
 
-    const jwtClaim = new JwtClaimDto(shopper!.id, shopper!.username, shopperPermissionCodes, shopperRole!.name);
+    const jwtClaim = new JwtClaimDto(shopper!.id, '', shopperPermissionCodes, shopperRole!.name);
 
     const secretKey = process.env.LOGIN_SECRET_KEY || '';
 
