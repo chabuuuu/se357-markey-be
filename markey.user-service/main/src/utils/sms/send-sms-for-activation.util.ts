@@ -17,7 +17,7 @@ export async function sendSmsForActivation(phoneNumber: string, tempUser: any) {
     if (await redis.get(`${RedisSchemaEnum.noneActivePhoneUserData}::${phoneNumber}`)) {
       throw new BaseError(
         ErrorCode.BAD_REQUEST,
-        'Verification code has been sent to your phone number. Please wait for 3 minuets before sending again'
+        'Verification code has been sent to your phone number. Please wait for 5 minuets before sending again'
       );
     }
     const randomToken = await generateRandomString();
@@ -25,7 +25,7 @@ export async function sendSmsForActivation(phoneNumber: string, tempUser: any) {
       `${RedisSchemaEnum.noneActivePhoneUserData}::${phoneNumber}`,
       JSON.stringify(new SmsActivateCacheDto(tempUser, randomToken)),
       'EX',
-      (TIME_CONSTANTS.MINUTE * 3) / 1000
+      (TIME_CONSTANTS.MINUTE * 5) / 1000
     );
     sendSms(`Hello from Markey Store!\nYour verification code is ${randomToken}`, [phoneNumber]);
   } catch (error) {
