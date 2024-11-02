@@ -25,9 +25,9 @@ export class Salesman extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 100,
-    nullable: false
+    nullable: true
   })
-  address!: string;
+  address?: string;
 
   @Column({
     type: 'varchar',
@@ -37,8 +37,8 @@ export class Salesman extends BaseEntity {
   })
   phoneNumber!: string;
 
-  @Column()
-  birthdate!: Date;
+  @Column({ nullable: true })
+  birthdate?: Date;
 
   @Column({
     type: 'varchar',
@@ -58,9 +58,9 @@ export class Salesman extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 70,
-    nullable: false
+    nullable: true
   })
-  cccd!: string;
+  cccd?: string;
 
   @Column({
     type: 'text',
@@ -83,7 +83,7 @@ export class Salesman extends BaseEntity {
       }
     }
   })
-  attachments!: string;
+  attachments?: string;
 
   @Column({
     type: 'boolean',

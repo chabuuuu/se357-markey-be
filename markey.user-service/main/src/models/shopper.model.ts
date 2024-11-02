@@ -10,9 +10,9 @@ export class Shopper extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 50,
-    nullable: false
+    nullable: true
   })
-  username!: string;
+  username?: string;
 
   @Column({
     type: 'varchar',
@@ -26,7 +26,7 @@ export class Shopper extends BaseEntity {
     nullable: true,
     name: 'profile_picture'
   })
-  profilePicture!: string;
+  profilePicture?: string;
 
   @Column({
     type: 'varchar',
@@ -38,9 +38,9 @@ export class Shopper extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 100,
-    nullable: false
+    nullable: true
   })
-  address!: string;
+  address?: string;
 
   @Column({
     type: 'varchar',
@@ -50,7 +50,7 @@ export class Shopper extends BaseEntity {
   })
   phoneNumber!: string;
 
-  @Column()
+  @Column({ nullable: true })
   birthdate!: Date;
 
   @Column({

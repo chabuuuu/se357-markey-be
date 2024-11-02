@@ -29,11 +29,11 @@ export class SalesmanRegisterReq {
   @Expose()
   fullname!: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MaxLength(100)
   @Expose()
-  address!: string;
+  address?: string;
 
   @IsNotEmpty()
   @IsString()
@@ -41,11 +41,10 @@ export class SalesmanRegisterReq {
   @Expose()
   phoneNumber!: string;
 
-  @IsNotEmpty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsDateString()
   @Expose()
-  birthdate!: Date;
+  birthdate?: Date;
 
   @IsNotEmpty()
   @IsString()
@@ -54,11 +53,11 @@ export class SalesmanRegisterReq {
   @Expose()
   email!: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MaxLength(70)
   @Expose()
-  cccd!: string;
+  cccd?: string;
 
   @IsOptional()
   @Transform(({ value }) => {
