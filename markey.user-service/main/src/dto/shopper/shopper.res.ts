@@ -16,6 +16,8 @@ export class ShopperRes extends BaseRes {
   @Expose()
   birthdate!: Date;
   @Expose()
+  gender!: string;
+  @Expose()
   email!: string;
   @Expose()
   profilePicture?: string;

@@ -1,4 +1,5 @@
-import { IsOptional } from 'class-validator';
+import { GenderTypeEnum } from '@/constants/gender-type.enum';
+import { IsEnum, IsOptional } from 'class-validator';
 
 export class ShopperUpdateReq {
   @IsOptional()
@@ -9,4 +10,7 @@ export class ShopperUpdateReq {
   address!: string;
   @IsOptional()
   birthdate!: Date;
+  @IsOptional()
+  @IsEnum(GenderTypeEnum)
+  gender?: string;
 }
