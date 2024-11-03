@@ -76,14 +76,14 @@ export class SalesmanService extends BaseCrudService<Salesman> implements ISales
       };
     }
 
-    if (filter.isApproved) {
+    if (filter.isApproved !== undefined || filter.isApproved !== null) {
       where = {
         ...where,
         isApproved: filter.isApproved
       };
     }
 
-    if (filter.isBlocked) {
+    if (filter.isBlocked !== undefined || filter.isBlocked !== null) {
       where = {
         ...where,
         isBlocked: filter.isBlocked
