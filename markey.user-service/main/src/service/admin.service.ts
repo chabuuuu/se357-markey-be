@@ -39,6 +39,42 @@ export class AdminService extends BaseCrudService<Admin> implements IAdminServic
     this.salesmanRepository = salesmanRepository;
     this.shopperRepository = shopperRepository;
   }
+  async unBlockShopper(shopperId: string): Promise<void> {
+    const shopper = await this.shopperRepository.findOne({
+      filter: {
+        id: shopperId
+      }
+    });
+    if (!shopper) {
+      throw new BaseError(ErrorCode.NF_01, 'Shopper not found');
+    }
+    await this.shopperRepository.findOneAndUpdate({
+      filter: { id: shopperId },
+      updateData: {
+        isBlocked: false
+      }
+    });
+
+    return;
+  }
+  async unblockSalesman(salesmanId: string): Promise<void> {
+    const salesman = await this.salesmanRepository.findOne({
+      filter: {
+        id: salesmanId
+      }
+    });
+    if (!salesman) {
+      throw new BaseError(ErrorCode.NF_01, 'Salesman not found');
+    }
+    await this.salesmanRepository.findOneAndUpdate({
+      filter: { id: salesmanId },
+      updateData: {
+        isBlocked: true
+      }
+    });
+
+    return;
+  }
   /**
    * Block shopper now can't login
    * @param shopperId

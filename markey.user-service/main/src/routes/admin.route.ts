@@ -9,6 +9,10 @@ const adminRouter = express.Router();
 
 adminRouter
 
+  .put('/unblock-shopper/:shopperId', adminController.unBlockShopper.bind(adminController))
+
+  .put('/unblock-salesman/:salesmanId', adminController.unBlockSalesman.bind(adminController))
+
   .put('/block-salesman/:salesmanId', adminController.blockSalesman.bind(adminController))
 
   .put('/block-shopper/:shopperId', adminController.blockShopper.bind(adminController))
