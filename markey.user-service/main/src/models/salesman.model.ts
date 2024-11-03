@@ -74,7 +74,7 @@ export class Salesman extends BaseEntity {
         return value;
       },
       from: (value: string) => {
-        console.log('value', value.split(','));
+        //console.log('value', value.split(','));
 
         if (!value) {
           return [];
