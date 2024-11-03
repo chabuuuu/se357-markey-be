@@ -4,6 +4,7 @@ import { ShopperLoginReq } from '@/dto/shopper/shopper-login.req';
 import { ShopperLoginRes } from '@/dto/shopper/shopper-login.res';
 import { ShopperPagingRes } from '@/dto/shopper/shopper-paging.res';
 import { ShopperRegisterReq } from '@/dto/shopper/shopper-register.req';
+import { ShopperSearchReq } from '@/dto/shopper/shopper-search.req';
 import { ShopperValidateRegisterReq } from '@/dto/shopper/shopper-valiate-registr.req';
 import { ShopperRes } from '@/dto/shopper/shopper.res';
 import { ErrorCode } from '@/enums/error-code.enums';
@@ -202,6 +203,22 @@ export class ShopperController {
       }
       const shopperDto: ShopperRes = convertToDto(ShopperRes, shopper);
       res.send_ok('Get shopper success', shopperDto);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * GET /api/shopper/filter
+   */
+  async findWithFilter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const filter: ShopperSearchReq = req.body;
+      const { page, rpp } = req.query;
+      const paging = new PagingDto(Number(page), Number(rpp));
+
+      const result = await this.shopperService.findWithFilter(filter, paging);
+      res.send_ok('Filter success', result);
     } catch (error) {
       next(error);
     }

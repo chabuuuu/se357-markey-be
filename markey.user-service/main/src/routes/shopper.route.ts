@@ -29,6 +29,8 @@ shopperRouter
     shopperController.validationRegister.bind(shopperController)
   )
 
+  .post('/filter', shopperController.findWithFilter.bind(shopperController))
+
   .post('/login', classValidate(ShopperLoginReq), shopperController.login.bind(shopperController))
 
   .get('/activation/phone', shopperController.activatePhoneNumber.bind(shopperController))
