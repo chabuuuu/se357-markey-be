@@ -69,7 +69,7 @@ export class AdminService extends BaseCrudService<Admin> implements IAdminServic
     await this.salesmanRepository.findOneAndUpdate({
       filter: { id: salesmanId },
       updateData: {
-        isBlocked: true
+        isBlocked: false
       }
     });
 
