@@ -27,6 +27,10 @@ import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
 import { IShoppingCartRepository } from '@/repository/interface/i.shopping_cart.repository';
 import { ShopperValidateRegisterReq } from '@/dto/shopper/shopper-valiate-registr.req';
+import { ShopperSearchReq } from '@/dto/shopper/shopper-search.req';
+import { RecordOrderType } from '@/types/record-order.types';
+import { Like } from 'typeorm';
+import { ShopperListSelect } from '@/dto/shopper/shopper-list.select';
 
 @injectable()
 export class ShopperService extends BaseCrudService<Shopper> implements IShopperService<Shopper> {
@@ -43,6 +47,93 @@ export class ShopperService extends BaseCrudService<Shopper> implements IShopper
     this.shopperRepository = shopperRepository;
     this.roleRepository = roleRepository;
     this.shoppingCartRepository = shoppingCartRepository;
+  }
+
+  /**
+   * * Find shopper with filter
+   * @param filter
+   * @param paging
+   */
+  async findWithFilter(filter: ShopperSearchReq, paging: PagingDto): Promise<PagingResponseDto<Shopper>> {
+    let where = {};
+    const sort: RecordOrderType[] = [];
+    if (filter.sort) {
+      sort.push({
+        column: filter.sort.by,
+        direction: filter.sort.order
+      });
+    }
+
+    if (filter.fullname) {
+      where = {
+        ...where,
+        fullname: Like(`%${filter.fullname}%`)
+      };
+    }
+
+    if (filter.email) {
+      where = {
+        ...where,
+        email: filter.email
+      };
+    }
+
+    if (filter.phoneNumber) {
+      where = {
+        ...where,
+        phoneNumber: filter.phoneNumber
+      };
+    }
+
+    if (filter.isBlocked != undefined || filter.isBlocked != null) {
+      where = {
+        ...where,
+        isBlocked: filter.isBlocked
+      };
+    }
+
+    if (filter.gender) {
+      where = {
+        ...where,
+        gender: filter.gender
+      };
+    }
+
+    if (filter.address) {
+      where = {
+        ...where,
+        address: filter.address
+      };
+    }
+
+    if (filter.username) {
+      where = {
+        ...where,
+        username: filter.username
+      };
+    }
+
+    if (filter.id) {
+      where = {
+        ...where,
+        id: filter.id
+      };
+    }
+
+    const shoppers = await this.shopperRepository.findMany({
+      filter: where,
+      paging: paging,
+      order: sort,
+      select: ShopperListSelect
+    });
+
+    const totalRecords = await this.baseRepository.count({
+      filter: where
+    });
+    return {
+      items: shoppers,
+      total: totalRecords
+    };
   }
 
   /**
