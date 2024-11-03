@@ -105,4 +105,30 @@ export class AdminController {
       next(error);
     }
   }
+
+  /**
+   * * PUT /admin/unblock-salesman/:salesmanId
+   */
+  async unBlockSalesman(req: Request, res: Response, next: NextFunction) {
+    try {
+      const salesmanId = req.params.salesmanId;
+      await this.adminService.unblockSalesman(salesmanId);
+      res.send_ok('Unblock salesman success');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * PUT /admin/unblock-shopper/:shopperId
+   */
+  async unBlockShopper(req: Request, res: Response, next: NextFunction) {
+    try {
+      const shopperId = req.params.shopperId;
+      await this.adminService.unBlockShopper(shopperId);
+      res.send_ok('Unblock shopper success');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
