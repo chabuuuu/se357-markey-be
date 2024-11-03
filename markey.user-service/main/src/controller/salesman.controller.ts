@@ -101,8 +101,7 @@ export class SalesmanController {
       const result = await this.salesmanService.findOne({
         filter: {
           id: id
-        },
-        relations: ['shop']
+        }
       });
       const resultDto = convertToDto(SalesmanDetailRes, result);
       res.send_ok('Get success', resultDto);
