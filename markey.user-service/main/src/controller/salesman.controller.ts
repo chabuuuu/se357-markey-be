@@ -228,4 +228,30 @@ export class SalesmanController {
       next(error);
     }
   }
+
+  /**
+   * * POST /api/salesman/forget-password
+   */
+  async forgetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await this.salesmanService.forgetPassword(data);
+      res.send_ok('OTP đã được gửi đến số điện thoại của bạn');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * POST /api/salesman/reset-password
+   */
+  async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await this.salesmanService.resetPassword(data);
+      res.send_ok('Reset password thành công');
+    } catch (error) {
+      next(error);
+    }
+  }
 }

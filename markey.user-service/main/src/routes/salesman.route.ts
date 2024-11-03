@@ -2,8 +2,10 @@ import { PERMISSION_CONSTANTS } from '@/constants/permission.constants';
 import { salesmanController } from '@/container/salesman.container';
 import { EmailActivateReq } from '@/dto/email-activate.req';
 import { SearchSalesmanReq } from '@/dto/salesman/salesman-filter.res';
+import { SalesmanForgetPasswordReq } from '@/dto/salesman/salesman-forget-password.req';
 import { SalesmanLoginReq } from '@/dto/salesman/salesman-login.req';
 import { SalesmanRegisterReq } from '@/dto/salesman/salesman-register.req';
+import { SalesmanResetPasswordReq } from '@/dto/salesman/salesman-reset-password';
 import { authenticateJWT } from '@/middleware/authenticate.middleware';
 import { checkPermission } from '@/middleware/check-permission.middleware';
 import { classValidate } from '@/middleware/class-validate.middleware';
@@ -22,6 +24,18 @@ salesmanRouter
     authenticateJWT,
     checkPermission([PERMISSION_CONSTANTS.MANAGE_SALESMAN]),
     salesmanController.approve.bind(salesmanController)
+  )
+
+  .post(
+    '/forget-password',
+    classValidate(SalesmanForgetPasswordReq),
+    salesmanController.forgetPassword.bind(salesmanController)
+  )
+
+  .post(
+    '/reset-password',
+    classValidate(SalesmanResetPasswordReq),
+    salesmanController.resetPassword.bind(salesmanController)
   )
 
   .post('/filter', salesmanController.findWithFilter.bind(salesmanController))

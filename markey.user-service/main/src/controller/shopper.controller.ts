@@ -223,4 +223,30 @@ export class ShopperController {
       next(error);
     }
   }
+
+  /**
+   * * POST /shopper/forget-password
+   */
+  async forgetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await this.shopperService.forgetPassword(data);
+      res.send_ok('OTP đã được gửi tới số điện thoại của bạn');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * POST /shopper/reset-password
+   */
+  async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await this.shopperService.resetPassword(data);
+      res.send_ok('Reset password thành công');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
