@@ -34,6 +34,9 @@ import { RecordOrderType } from '@/types/record-order.types';
 import { Like } from 'typeorm';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { SalesmanListSelect } from '@/dto/salesman/salesman-list.select';
+import { sendSms } from '@/utils/sms/sms-sender.utils';
+import { SalesmanResetPasswordReq } from '@/dto/salesman/salesman-reset-password';
+import { SalesmanForgetPasswordReq } from '@/dto/salesman/salesman-forget-password.req';
 
 @injectable()
 export class SalesmanService extends BaseCrudService<Salesman> implements ISalesmanService<Salesman> {
@@ -50,6 +53,90 @@ export class SalesmanService extends BaseCrudService<Salesman> implements ISales
     this.salesmanRepository = salesmanRepository;
     this.shopRepository = shopRepository;
     this.roleRepository = roleRepository;
+  }
+
+  /**
+   * * Reset password after receive code 6 number
+   * @param data
+   */
+  async resetPassword(data: SalesmanResetPasswordReq): Promise<void> {
+    const { phoneNumber, code, password } = data;
+
+    const existsSend = await redis.get(`${RedisSchemaEnum.forgetPassword}::${phoneNumber}`);
+
+    if (!existsSend) {
+      throw new BaseError(ErrorCode.INVALID_CODE, 'Code is expired');
+    }
+
+    if (existsSend !== code) {
+      throw new BaseError(ErrorCode.INVALID_CODE, 'Invalid code');
+    }
+
+    const salesman = await this.salesmanRepository.findOne({
+      filter: {
+        phoneNumber: phoneNumber
+      }
+    });
+    if (!salesman) {
+      throw new BaseError(ErrorCode.NF_01, 'Salesman not found');
+    }
+
+    salesman.password = bcrypt.hashSync(password, 10);
+
+    await this.salesmanRepository.findOneAndUpdate({
+      filter: {
+        phoneNumber: phoneNumber
+      },
+      updateData: {
+        password: salesman.password
+      }
+    });
+
+    return;
+  }
+
+  /**
+   * * Forget password
+   * * Send code 6 number to phone number
+   * @param phoneNumber
+   */
+  async forgetPassword(data: SalesmanForgetPasswordReq): Promise<void> {
+    const { phoneNumber } = data;
+
+    const existsSend = await redis.get(`${RedisSchemaEnum.forgetPassword}::${phoneNumber}`);
+
+    if (existsSend) {
+      throw new BaseError(
+        ErrorCode.BAD_REQUEST,
+        'Verification code has been sent to your phone number. Please wait for 5 minuets before sending again'
+      );
+    }
+
+    const salesman = await this.salesmanRepository.findOne({
+      filter: {
+        phoneNumber: phoneNumber
+      }
+    });
+    if (!salesman) {
+      throw new BaseError(ErrorCode.NF_01, 'Salesman not found');
+    }
+
+    const randomToken = await generateRandomString();
+
+    await redis.set(
+      `${RedisSchemaEnum.forgetPassword}::${phoneNumber}`,
+      randomToken,
+      'EX',
+      (TIME_CONSTANTS.MINUTE * 5) / 1000
+    );
+
+    //Send sms to phone number
+    sendSms(
+      `Hello from Markey Store!\nYour otp code for reset password is ${randomToken}.\nPlease do not share this code with anyone.`,
+      [phoneNumber]
+    );
+
+    return;
   }
 
   async findWithFilter(filter: SearchSalesmanReq, paging: PagingDto): Promise<PagingResponseDto<Salesman>> {

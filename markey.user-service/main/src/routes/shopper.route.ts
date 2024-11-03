@@ -1,8 +1,10 @@
 import { PERMISSION_CONSTANTS } from '@/constants/permission.constants';
 import { shopperController } from '@/container/shopper.container';
 import { EmailActivateReq } from '@/dto/email-activate.req';
+import { ShopperForgetPasswordReq } from '@/dto/shopper/shopper-forget-password.req';
 import { ShopperLoginReq } from '@/dto/shopper/shopper-login.req';
 import { ShopperRegisterReq } from '@/dto/shopper/shopper-register.req';
+import { ShopperResetPasswordReq } from '@/dto/shopper/shopper-reset-password.req';
 import { ShopperUpdateReq } from '@/dto/shopper/shopper-update.req';
 import { ShopperValidateRegisterReq } from '@/dto/shopper/shopper-valiate-registr.req';
 import { authenticateJWT } from '@/middleware/authenticate.middleware';
@@ -13,6 +15,18 @@ const shopperRouter = express.Router();
 
 shopperRouter
   .put('/:id', classValidate(ShopperUpdateReq), shopperController.common.update.bind(shopperController.common))
+
+  .post(
+    '/forget-password',
+    classValidate(ShopperForgetPasswordReq),
+    shopperController.forgetPassword.bind(shopperController)
+  )
+
+  .post(
+    '/reset-password',
+    classValidate(ShopperResetPasswordReq),
+    shopperController.resetPassword.bind(shopperController)
+  )
 
   .post('/register', classValidate(ShopperRegisterReq), shopperController.register.bind(shopperController))
 

@@ -60,17 +60,17 @@ export class SalesmanRegisterReq {
   cccd?: string;
 
   @IsOptional()
-  @Transform(({ value }) => {
-    //Check if value is an array
-    if (!isArray(value)) {
-      throw new BaseError(ErrorCode.VALIDATION_ERROR, 'Your request body is not valid', ['Attachment is not an array']);
-    }
-    console.log('value', value.join(','));
+  // @Transform(({ value }) => {
+  //   //Check if value is an array
+  //   if (!isArray(value)) {
+  //     throw new BaseError(ErrorCode.VALIDATION_ERROR, 'Your request body is not valid', ['Attachment is not an array']);
+  //   }
+  //   console.log('value', value.join(','));
 
-    return value.join(',');
-  })
+  //   return value.join(',');
+  // })
   @Expose()
-  @IsString()
+  //@IsString()
   attachments?: string;
 
   @IsNotEmpty()

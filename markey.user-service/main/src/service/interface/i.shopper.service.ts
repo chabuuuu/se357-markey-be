@@ -1,9 +1,11 @@
 import { MessageRes } from '@/dto/message-response.res';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
+import { ShopperForgetPasswordReq } from '@/dto/shopper/shopper-forget-password.req';
 import { ShopperLoginReq } from '@/dto/shopper/shopper-login.req';
 import { ShopperLoginRes } from '@/dto/shopper/shopper-login.res';
 import { ShopperRegisterReq } from '@/dto/shopper/shopper-register.req';
+import { ShopperResetPasswordReq } from '@/dto/shopper/shopper-reset-password.req';
 import { ShopperSearchReq } from '@/dto/shopper/shopper-search.req';
 import { ShopperValidateRegisterReq } from '@/dto/shopper/shopper-valiate-registr.req';
 import { ShopperRes } from '@/dto/shopper/shopper.res';
@@ -19,4 +21,6 @@ export interface IShopperService<T extends BaseModelType> extends IBaseCrudServi
   verifyEmailToken(email: string, token: string): Promise<void>;
   activateEmail(shopperId: string, email: string): Promise<void>;
   activatePhoneNumber(phoneNumber: string, code: string): Promise<string>;
+  forgetPassword(data: ShopperForgetPasswordReq): Promise<void>;
+  resetPassword(data: ShopperResetPasswordReq): Promise<void>;
 }
