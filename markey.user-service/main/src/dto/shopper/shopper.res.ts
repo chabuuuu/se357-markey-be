@@ -20,5 +20,7 @@ export class ShopperRes extends BaseRes {
   @Expose()
   email!: string;
   @Expose()
+  isBlocked!: boolean;
+  @Expose()
   profilePicture?: string;
 }
