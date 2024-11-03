@@ -31,6 +31,10 @@ import { ShopperSearchReq } from '@/dto/shopper/shopper-search.req';
 import { RecordOrderType } from '@/types/record-order.types';
 import { Like } from 'typeorm';
 import { ShopperListSelect } from '@/dto/shopper/shopper-list.select';
+import { generateRandomString } from '@/utils/random/generate-random-string.util';
+import { sendSms } from '@/utils/sms/sms-sender.utils';
+import { ShopperResetPasswordReq } from '@/dto/shopper/shopper-reset-password.req';
+import { ShopperForgetPasswordReq } from '@/dto/shopper/shopper-forget-password.req';
 
 @injectable()
 export class ShopperService extends BaseCrudService<Shopper> implements IShopperService<Shopper> {
@@ -47,6 +51,90 @@ export class ShopperService extends BaseCrudService<Shopper> implements IShopper
     this.shopperRepository = shopperRepository;
     this.roleRepository = roleRepository;
     this.shoppingCartRepository = shoppingCartRepository;
+  }
+  /**
+   * * Reset password after receive code
+   * @param data
+   */
+  async resetPassword(data: ShopperResetPasswordReq): Promise<void> {
+    const { phoneNumber, code, password } = data;
+
+    const existsSend = await redis.get(`${RedisSchemaEnum.forgetPassword}::${phoneNumber}`);
+
+    if (!existsSend) {
+      throw new BaseError(ErrorCode.INVALID_CODE, 'Code is expired');
+    }
+
+    if (existsSend !== code) {
+      throw new BaseError(ErrorCode.INVALID_CODE, 'Invalid code');
+    }
+
+    const shopper = await this.shopperRepository.findOne({
+      filter: {
+        phoneNumber: phoneNumber
+      }
+    });
+
+    if (!shopper) {
+      throw new BaseError(ErrorCode.NF_01, 'Shopper not found');
+    }
+
+    shopper.password = bcrypt.hashSync(password, 10);
+
+    await this.shopperRepository.findOneAndUpdate({
+      filter: {
+        phoneNumber: phoneNumber
+      },
+      updateData: {
+        password: shopper.password
+      }
+    });
+
+    return;
+  }
+
+  /**
+   * * Forget password
+   * Send code to phone number to reset password
+   * @param phoneNumber
+   */
+  async forgetPassword(data: ShopperForgetPasswordReq): Promise<void> {
+    const { phoneNumber } = data;
+
+    const existsSend = await redis.exists(`${RedisSchemaEnum.forgetPassword}::${phoneNumber}`);
+
+    if (existsSend) {
+      throw new BaseError(
+        ErrorCode.BAD_REQUEST,
+        'Verification code has been sent to your phone number. Please wait for 5 minuets before sending again'
+      );
+    }
+
+    const shopper = await this.shopperRepository.findOne({
+      filter: {
+        phoneNumber: phoneNumber
+      }
+    });
+    if (!shopper) {
+      throw new BaseError(ErrorCode.NF_01, 'Shopper not found');
+    }
+
+    const randomToken = await generateRandomString();
+
+    await redis.set(
+      `${RedisSchemaEnum.forgetPassword}::${phoneNumber}`,
+      randomToken,
+      'EX',
+      (TIME_CONSTANTS.MINUTE * 5) / 1000
+    );
+
+    //Send sms to phone number
+    sendSms(
+      `Hello from Markey Store!\nYour otp code for reset password is ${randomToken}.\nPlease do not share this code with anyone.`,
+      [phoneNumber]
+    );
+
+    return;
   }
 
   /**
