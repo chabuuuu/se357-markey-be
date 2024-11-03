@@ -12,7 +12,7 @@ const salesmanRouter = express.Router();
 
 salesmanRouter
   .put(
-    '/:id',
+    '/:salesmanId',
     authenticateJWT,
     checkPermission([PERMISSION_CONSTANTS.MANAGE_SALESMAN]),
     salesmanController.updateBySalesmanId.bind(salesmanController)
@@ -49,7 +49,7 @@ salesmanRouter
   .get('/me', authenticateJWT, salesmanController.getMeDetail.bind(salesmanController))
 
   .get(
-    '/:id',
+    '/:salesmanId',
     authenticateJWT,
     checkPermission([PERMISSION_CONSTANTS.MANAGE_SALESMAN]),
     salesmanController.findOneById.bind(salesmanController)
@@ -62,7 +62,7 @@ salesmanRouter
   )
 
   .delete(
-    '/:id',
+    '/:salesmanId',
     authenticateJWT,
     checkPermission([PERMISSION_CONSTANTS.MANAGE_SALESMAN]),
     salesmanController.delete.bind(salesmanController)
