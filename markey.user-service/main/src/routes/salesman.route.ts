@@ -1,6 +1,7 @@
 import { PERMISSION_CONSTANTS } from '@/constants/permission.constants';
 import { salesmanController } from '@/container/salesman.container';
 import { EmailActivateReq } from '@/dto/email-activate.req';
+import { SalesmanChangePasswordReq } from '@/dto/salesman/salesman-change-password.req';
 import { SearchSalesmanReq } from '@/dto/salesman/salesman-filter.res';
 import { SalesmanForgetPasswordReq } from '@/dto/salesman/salesman-forget-password.req';
 import { SalesmanLoginReq } from '@/dto/salesman/salesman-login.req';
@@ -14,9 +15,16 @@ const salesmanRouter = express.Router();
 
 salesmanRouter
   .put(
+    '/change-password',
+    authenticateJWT,
+    classValidate(SalesmanChangePasswordReq),
+    salesmanController.changePassword.bind(salesmanController)
+  )
+
+  .put(
     '/:salesmanId',
     authenticateJWT,
-    checkPermission([PERMISSION_CONSTANTS.MANAGE_SALESMAN]),
+    //checkPermission([PERMISSION_CONSTANTS.MANAGE_SALESMAN]),
     salesmanController.updateBySalesmanId.bind(salesmanController)
   )
   .put(

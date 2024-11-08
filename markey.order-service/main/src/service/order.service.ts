@@ -1,5 +1,6 @@
 import { CreateOrderReq } from '@/dto/order/create-order.req';
 import { FindOrderWithFilterReq } from '@/dto/order/find-order-with-filter.req';
+import { FindOrderWithFilterSelect } from '@/dto/order/find-order-with-filter.select';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
 import { CreatePaymentReq } from '@/dto/payment/create-payment.req';
@@ -93,10 +94,14 @@ export class OrderService extends BaseCrudService<Order> implements IOrderServic
       };
     }
 
+    //console.log('paging', paging);
+
     const orders = await this.orderRepository.findMany({
       filter: where,
       paging: paging,
-      order: sort
+      order: sort,
+      relations: ['items'],
+      select: FindOrderWithFilterSelect
     });
 
     const totalRecords = await this.baseRepository.count({
