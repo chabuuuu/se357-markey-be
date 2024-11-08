@@ -1,5 +1,6 @@
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
+import { SalesmanChangePasswordReq } from '@/dto/salesman/salesman-change-password.req';
 import { SearchSalesmanReq } from '@/dto/salesman/salesman-filter.res';
 import { SalesmanForgetPasswordReq } from '@/dto/salesman/salesman-forget-password.req';
 import { SalesmanLoginReq } from '@/dto/salesman/salesman-login.req';
@@ -12,6 +13,7 @@ import { IBaseCrudService } from '@/service/interface/i.base.service';
 import { BaseModelType } from '@/types/base-model.types';
 
 export interface ISalesmanService<T extends BaseModelType> extends IBaseCrudService<T> {
+  changePassword(shopperId: string, data: SalesmanChangePasswordReq): Promise<void>;
   findWithFilter(filter: SearchSalesmanReq, paging: PagingDto): Promise<PagingResponseDto<Salesman>>;
   login(data: SalesmanLoginReq): Promise<SalesmanLoginRes>;
   verifyEmailToken(email: string, token: string): Promise<void>;

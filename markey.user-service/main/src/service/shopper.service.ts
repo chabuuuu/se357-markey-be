@@ -35,6 +35,7 @@ import { generateRandomString } from '@/utils/random/generate-random-string.util
 import { sendSms } from '@/utils/sms/sms-sender.utils';
 import { ShopperResetPasswordReq } from '@/dto/shopper/shopper-reset-password.req';
 import { ShopperForgetPasswordReq } from '@/dto/shopper/shopper-forget-password.req';
+import { ShopperChangePasswordReq } from '@/dto/shopper/shopper-change-password.req';
 
 @injectable()
 export class ShopperService extends BaseCrudService<Shopper> implements IShopperService<Shopper> {
@@ -52,6 +53,41 @@ export class ShopperService extends BaseCrudService<Shopper> implements IShopper
     this.roleRepository = roleRepository;
     this.shoppingCartRepository = shoppingCartRepository;
   }
+
+  /**
+   * Change password
+   * @param arg0
+   * @param data
+   */
+  async changePassword(shopperId: string, data: ShopperChangePasswordReq): Promise<void> {
+    const shopper = await this.shopperRepository.findOne({
+      filter: {
+        id: shopperId
+      }
+    });
+
+    if (!shopper) {
+      throw new BaseError(ErrorCode.NF_01, 'Shopper not found');
+    }
+
+    if (!bcrypt.compareSync(data.oldPassword, shopper.password)) {
+      throw new BaseError(ErrorCode.AUTH_01, 'Old password is incorrect');
+    }
+
+    shopper.password = bcrypt.hashSync(data.newPassword, 10);
+
+    await this.shopperRepository.findOneAndUpdate({
+      filter: {
+        id: shopperId
+      },
+      updateData: {
+        password: shopper.password
+      }
+    });
+
+    return;
+  }
+
   /**
    * * Reset password after receive code
    * @param data

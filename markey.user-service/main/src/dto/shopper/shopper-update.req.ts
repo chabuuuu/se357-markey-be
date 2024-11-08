@@ -3,13 +3,13 @@ import { IsEnum, IsOptional } from 'class-validator';
 
 export class ShopperUpdateReq {
   @IsOptional()
-  profilePicture!: string;
+  profilePicture?: string;
   @IsOptional()
-  fullname!: string;
+  fullname?: string;
   @IsOptional()
-  address!: string;
+  address?: string;
   @IsOptional()
-  birthdate!: Date;
+  birthdate?: Date;
   @IsOptional()
   @IsEnum(GenderTypeEnum)
   gender?: string;

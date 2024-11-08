@@ -37,6 +37,7 @@ import { SalesmanListSelect } from '@/dto/salesman/salesman-list.select';
 import { sendSms } from '@/utils/sms/sms-sender.utils';
 import { SalesmanResetPasswordReq } from '@/dto/salesman/salesman-reset-password';
 import { SalesmanForgetPasswordReq } from '@/dto/salesman/salesman-forget-password.req';
+import { SalesmanChangePasswordReq } from '@/dto/salesman/salesman-change-password.req';
 
 @injectable()
 export class SalesmanService extends BaseCrudService<Salesman> implements ISalesmanService<Salesman> {
@@ -53,6 +54,40 @@ export class SalesmanService extends BaseCrudService<Salesman> implements ISales
     this.salesmanRepository = salesmanRepository;
     this.shopRepository = shopRepository;
     this.roleRepository = roleRepository;
+  }
+
+  /**
+   * * Change password
+   * @param shopperId
+   * @param data
+   */
+  async changePassword(shopperId: string, data: SalesmanChangePasswordReq): Promise<void> {
+    const salesman = await this.salesmanRepository.findOne({
+      filter: {
+        id: shopperId
+      }
+    });
+
+    if (!salesman) {
+      throw new BaseError(ErrorCode.NF_01, 'Salesman not found');
+    }
+
+    if (!bcrypt.compareSync(data.oldPassword, salesman.password)) {
+      throw new BaseError(ErrorCode.AUTH_01, 'Old password is incorrect');
+    }
+
+    salesman.password = bcrypt.hashSync(data.newPassword, 10);
+
+    await this.salesmanRepository.findOneAndUpdate({
+      filter: {
+        id: shopperId
+      },
+      updateData: {
+        password: salesman.password
+      }
+    });
+
+    return;
   }
 
   /**

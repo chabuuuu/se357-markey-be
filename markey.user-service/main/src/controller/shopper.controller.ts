@@ -249,4 +249,24 @@ export class ShopperController {
       next(error);
     }
   }
+
+  /**
+   * * PUT /shopper/change-password
+   */
+  async changePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const shopperId = req.user?.id;
+
+      if (!shopperId) {
+        throw new BaseError(ErrorCode.AUTH_01, 'Unauthorized');
+      }
+
+      const data = req.body;
+
+      await this.shopperService.changePassword(shopperId!, data);
+      res.send_ok('Change password success');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
