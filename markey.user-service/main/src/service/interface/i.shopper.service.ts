@@ -1,6 +1,7 @@
 import { MessageRes } from '@/dto/message-response.res';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
+import { ShopperChangePasswordReq } from '@/dto/shopper/shopper-change-password.req';
 import { ShopperForgetPasswordReq } from '@/dto/shopper/shopper-forget-password.req';
 import { ShopperLoginReq } from '@/dto/shopper/shopper-login.req';
 import { ShopperLoginRes } from '@/dto/shopper/shopper-login.res';
@@ -14,6 +15,7 @@ import { IBaseCrudService } from '@/service/interface/i.base.service';
 import { BaseModelType } from '@/types/base-model.types';
 
 export interface IShopperService<T extends BaseModelType> extends IBaseCrudService<T> {
+  changePassword(shopperId: string, data: ShopperChangePasswordReq): Promise<void>;
   findWithFilter(filter: ShopperSearchReq, paging: PagingDto): Promise<PagingResponseDto<Shopper>>;
   validationRegister(data: ShopperValidateRegisterReq): Promise<void>;
   login(data: ShopperLoginReq): Promise<ShopperLoginRes>;

@@ -1,5 +1,6 @@
 import { IBaseCrudController } from '@/controller/interfaces/i.base-curd.controller';
 import { PagingDto } from '@/dto/paging.dto';
+import { SalesmanChangePasswordReq } from '@/dto/salesman/salesman-change-password.req';
 import { SalesmanDetailRes } from '@/dto/salesman/salesman-detail.res';
 import { SearchSalesmanReq } from '@/dto/salesman/salesman-filter.res';
 import { SalesmanLoginReq } from '@/dto/salesman/salesman-login.req';
@@ -250,6 +251,20 @@ export class SalesmanController {
       const data = req.body;
       await this.salesmanService.resetPassword(data);
       res.send_ok('Reset password thành công');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * PUT /api/salesman/change-password
+   */
+  async changePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const salesmanId = req.user?.id;
+      const data: SalesmanChangePasswordReq = req.body;
+      await this.salesmanService.changePassword(salesmanId!, data);
+      res.send_ok('Change password success');
     } catch (error) {
       next(error);
     }

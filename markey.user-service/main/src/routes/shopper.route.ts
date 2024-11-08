@@ -1,6 +1,7 @@
 import { PERMISSION_CONSTANTS } from '@/constants/permission.constants';
 import { shopperController } from '@/container/shopper.container';
 import { EmailActivateReq } from '@/dto/email-activate.req';
+import { ShopperChangePasswordReq } from '@/dto/shopper/shopper-change-password.req';
 import { ShopperForgetPasswordReq } from '@/dto/shopper/shopper-forget-password.req';
 import { ShopperLoginReq } from '@/dto/shopper/shopper-login.req';
 import { ShopperRegisterReq } from '@/dto/shopper/shopper-register.req';
@@ -14,6 +15,14 @@ import express from 'express';
 const shopperRouter = express.Router();
 
 shopperRouter
+
+  .put(
+    '/change-password',
+    authenticateJWT,
+    classValidate(ShopperChangePasswordReq),
+    shopperController.changePassword.bind(shopperController)
+  )
+
   .put('/:id', classValidate(ShopperUpdateReq), shopperController.common.update.bind(shopperController.common))
 
   .post(
