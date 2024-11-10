@@ -9,4 +9,5 @@ export class FindOrderWithFilterReq {
   shopperId?: string;
   totalFrom?: number;
   totalTo?: number;
+  shopId?: string;
 }

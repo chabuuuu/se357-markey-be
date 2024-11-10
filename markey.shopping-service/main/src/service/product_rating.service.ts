@@ -1,5 +1,6 @@
 import { CreateRatingReq } from '@/dto/rating/create-rating.req';
 import { GetRatingByProductRes } from '@/dto/rating/get-rating-by-product.res';
+import { ShopperRes } from '@/dto/service_communicate/shopper.res';
 import { ErrorCode } from '@/enums/error-code.enums';
 import { Product } from '@/models/product.model';
 import { ProductRating } from '@/models/product_rating.model';
@@ -7,7 +8,10 @@ import { IProductRepository } from '@/repository/interface/i.product.repository'
 import { IProductRatingRepository } from '@/repository/interface/i.product_rating.repository';
 import { BaseCrudService } from '@/service/base/base.service';
 import { IProductRatingService } from '@/service/interface/i.product_rating.service';
+import { GlobalConfig } from '@/utils/config/global-config.util';
+import { convertToDto } from '@/utils/dto-convert/convert-to-dto.util';
 import BaseError from '@/utils/error/base.error';
+import axios from 'axios';
 import { inject, injectable } from 'inversify';
 
 @injectable()
@@ -90,6 +94,21 @@ export class ProductRatingService
     if (!product) {
       throw new BaseError(ErrorCode.NF_01, 'Product not found');
     }
+
+    // 0. Get shopper detail from user service
+
+    const userServiceUrl = GlobalConfig.microservices.user.url;
+
+    const endpoint = GlobalConfig.microservices.user.api.get_shopper_detail.endpoint;
+
+    // Call with axios to shopping service to create shop
+    const response = await axios.get(`${userServiceUrl}${endpoint}` + shopperId);
+
+    const shopperRes = convertToDto(ShopperRes, response.data.data);
+
+    //Adding shopper detail to rating
+
+    (data as unknown as ProductRating).shopper = shopperRes;
 
     // 1. Create new rating
     const rating = await this.productRatingRepository.create({
