@@ -52,6 +52,13 @@ export class OrderService extends BaseCrudService<Order> implements IOrderServic
       });
     }
 
+    if (filter.shopId) {
+      where = {
+        ...where,
+        shopId: filter.shopId
+      };
+    }
+
     if (filter.id) {
       where = {
         ...where,
@@ -144,50 +151,75 @@ export class OrderService extends BaseCrudService<Order> implements IOrderServic
    * This will create an order for a shopper by load the shopper's cart and create an order from it
    * @param shopperId
    */
-  async createOrder(shopperId: string, data: CreateOrderReq): Promise<Order> {
+  async createOrder(shopperId: string, data: CreateOrderReq): Promise<Order[]> {
     const cart = await this.cartRepository.findByShopperId(shopperId);
 
-    const order = new Order();
-    order.shopperId = shopperId;
-    order.address = data.address;
-    order.total = cart.total;
+    //Nếu sản phẩm trong giỏ hàng thuộc nhiều shop khác nhau => tách thành các order khác nhau
 
-    const orderItems = new Array<OrderItem>();
+    const shopIds = new Set<string>();
 
-    const productInCarts = cart.products;
-
-    for (const productInCart of productInCarts) {
-      const orderItem = new OrderItem();
-      orderItem.productId = productInCart.id;
-      orderItem.amount = productInCart.amount;
-
-      // Copy product data to order item
-      const productDto = new ProductDto();
-
-      productDto.id = productInCart.id;
-      productDto.name = productInCart.name;
-      productDto.price = productInCart.price;
-      productDto.picture = productInCart.picture;
-      productDto.description = productInCart.description;
-
-      orderItem.product = productDto;
-
-      orderItems.push(orderItem);
+    for (const productInCart of cart.products) {
+      shopIds.add(productInCart.shopId);
     }
 
-    order.items = orderItems;
+    console.log('shopIds', shopIds);
 
-    const createdOrder = await this.orderRepository.save(order);
+    const createdOrders = new Array<Order>();
 
-    //Call to payment service to create payment
-    const createPaymentReq = new CreatePaymentReq();
-    createPaymentReq.total = order.total;
-    createPaymentReq.order = order;
-    createPaymentReq.orderId = order.id;
-    createPaymentReq.paymentMethod = data.paymentMethod;
+    for (const shopId of shopIds) {
+      const order = new Order();
+      order.shopperId = shopperId;
+      order.address = data.address;
+      order.shopId = shopId;
 
-    this.paymentRepository.createPayment(createPaymentReq);
+      const orderItems = new Array<OrderItem>();
 
-    return createdOrder;
+      const productInCarts = cart.products;
+
+      let total = 0;
+
+      for (const productInCart of productInCarts) {
+        if (productInCart.shopId !== shopId) {
+          continue;
+        }
+
+        total += productInCart.price * productInCart.amount;
+
+        const orderItem = new OrderItem();
+        orderItem.productId = productInCart.id;
+        orderItem.amount = productInCart.amount;
+
+        // Copy product data to order item
+        const productDto = new ProductDto();
+
+        productDto.id = productInCart.id;
+        productDto.name = productInCart.name;
+        productDto.price = productInCart.price;
+        productDto.picture = productInCart.picture;
+        productDto.description = productInCart.description;
+
+        orderItem.product = productDto;
+
+        orderItems.push(orderItem);
+      }
+
+      order.total = total;
+      order.items = orderItems;
+
+      const createdOrder = await this.orderRepository.save(order);
+
+      //Call to payment service to create payment
+      const createPaymentReq = new CreatePaymentReq();
+      createPaymentReq.total = order.total;
+      createPaymentReq.order = order;
+      createPaymentReq.orderId = order.id;
+      createPaymentReq.paymentMethod = data.paymentMethod;
+
+      this.paymentRepository.createPayment(createPaymentReq);
+
+      createdOrders.push(createdOrder);
+    }
+
+    return createdOrders;
   }
 }

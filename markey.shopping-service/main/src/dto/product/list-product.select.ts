@@ -13,7 +13,8 @@ export const ListProductSelect = {
   shop: {
     id: true,
     name: true
-  }
+  },
+  picture: true
 
   //BaseEntity
   // createAt: true,

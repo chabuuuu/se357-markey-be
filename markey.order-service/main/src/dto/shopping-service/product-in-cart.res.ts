@@ -13,4 +13,6 @@ export class ProductInCartRes {
   picture?: string[];
   @Expose()
   amount!: number;
+  @Expose()
+  shopId!: string;
 }

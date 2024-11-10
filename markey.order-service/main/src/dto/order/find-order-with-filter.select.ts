@@ -4,6 +4,7 @@ export const FindOrderWithFilterSelect = {
   status: true,
   address: true,
   shopperId: true,
+  shopId: true,
   paymentId: true,
   createAt: true,
   updateAt: true,
