@@ -27,5 +27,5 @@ export interface IOrderService<T extends BaseModelType> extends IBaseCrudService
    * This will create an order for a shopper by load the shopper's cart and create an order from it
    * @param shopperId
    */
-  createOrder(shopperId: string, data: CreateOrderReq): Promise<Order>;
+  createOrder(shopperId: string, data: CreateOrderReq): Promise<Order[]>;
 }

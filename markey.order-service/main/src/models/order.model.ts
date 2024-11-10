@@ -31,6 +31,9 @@ export class Order extends BaseEntity {
   @Column()
   shopperId!: string;
 
+  @Column({ nullable: true })
+  shopId?: string;
+
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
     cascade: true
   })

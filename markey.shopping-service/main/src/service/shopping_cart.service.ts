@@ -112,6 +112,7 @@ export class ShoppingCartService extends BaseCrudService<ShoppingCart> implement
       productInCart.updatedAt = item.updateAt;
       productInCart.createdBy = item.createBy;
       productInCart.updatedBy = item.updateBy;
+      productInCart.shopId = item.product.shopId;
 
       productInCarts.push(productInCart);
 

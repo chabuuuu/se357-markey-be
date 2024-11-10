@@ -8,6 +8,16 @@
   "gateway": {
     "url": "http://localhost:8000/shopping-service/api/v1"
   },
+  "microservices": {
+    "user": {
+      "url": "http://localhost:3000",
+      "api": {
+        "get_shopper_detail": {
+          "endpoint": "/shopper/"
+        }
+      }
+    }
+  },
   "request_limit": {
     "limit": "100kb"
   },

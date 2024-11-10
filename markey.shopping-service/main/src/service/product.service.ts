@@ -13,7 +13,7 @@ import { IProductService } from '@/service/interface/i.product.service';
 import { RecordOrderType } from '@/types/record-order.types';
 import BaseError from '@/utils/error/base.error';
 import { inject, injectable } from 'inversify';
-import { LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm';
+import { And, LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm';
 
 @injectable()
 export class ProductService extends BaseCrudService<Product> implements IProductService<Product> {
@@ -54,17 +54,24 @@ export class ProductService extends BaseCrudService<Product> implements IProduct
       };
     }
 
-    if (filter.priceFrom) {
+    if (filter.priceFrom && !filter.priceTo) {
       where = {
         ...where,
         price: MoreThanOrEqual(filter.priceFrom)
       };
     }
 
-    if (filter.priceTo) {
+    if (!filter.priceFrom && filter.priceTo) {
       where = {
         ...where,
         price: LessThanOrEqual(filter.priceTo)
+      };
+    }
+
+    if (filter.priceFrom && filter.priceTo) {
+      where = {
+        ...where,
+        price: And(MoreThanOrEqual(filter.priceFrom), LessThanOrEqual(filter.priceTo))
       };
     }
 

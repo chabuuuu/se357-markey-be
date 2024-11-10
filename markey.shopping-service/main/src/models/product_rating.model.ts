@@ -1,3 +1,4 @@
+import { ShopperRes } from '@/dto/service_communicate/shopper.res';
 import { Product } from '@/models/product.model';
 import {
   Entity,
@@ -40,6 +41,12 @@ export class ProductRating extends BaseEntity {
     name: 'shopper_id'
   })
   shopperId!: string;
+
+  @Column({
+    type: 'jsonb',
+    nullable: true
+  })
+  shopper?: ShopperRes;
 
   @ManyToOne(() => Product, (product) => product.productRatings, {
     onDelete: 'CASCADE'

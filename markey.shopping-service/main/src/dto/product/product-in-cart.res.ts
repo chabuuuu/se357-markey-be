@@ -5,6 +5,7 @@ export class ProductInCartRes {
   price!: number;
   picture?: string[];
   amount!: number;
+  shopId!: string;
   createdAt?: Date;
   updatedAt?: Date;
   createdBy?: string;

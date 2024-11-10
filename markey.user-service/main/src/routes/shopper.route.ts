@@ -71,8 +71,8 @@ shopperRouter
 
   .get(
     '/:id',
-    authenticateJWT,
-    checkPermission([PERMISSION_CONSTANTS.MANAGE_SHOPPER]),
+    // authenticateJWT,
+    // checkPermission([PERMISSION_CONSTANTS.MANAGE_SHOPPER]),
     shopperController.findOne.bind(shopperController)
   )
 
