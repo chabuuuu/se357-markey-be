@@ -14,6 +14,7 @@ productRatingRouter
   )
   .get('/by-product/:productId', productRatingController.findByProductId.bind(productRatingController))
   .get('/average/:productId', productRatingController.getAvarageRating.bind(productRatingController))
+  .get('/have-rated', productRatingController.haveRated.bind(productRatingController))
   .get('/:id', productRatingController.findOne.bind(productRatingController));
 
 export default productRatingRouter;
