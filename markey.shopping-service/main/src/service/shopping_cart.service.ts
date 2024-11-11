@@ -1,6 +1,7 @@
 import { AddToCartReq } from '@/dto/cart/add-to-cart.req';
 import { GetCartGroupByCreatedAt } from '@/dto/cart/get-cart-group-by-created-date.res';
 import { GetCartRes } from '@/dto/cart/get-cart.res';
+import { UpdateCartReq } from '@/dto/cart/udpate-cart.req';
 import { ProductInCartRes } from '@/dto/product/product-in-cart.res';
 import { CartItem } from '@/models/cart_item.model';
 import { ShoppingCart } from '@/models/shopping_cart.model';
@@ -21,6 +22,42 @@ export class ShoppingCartService extends BaseCrudService<ShoppingCart> implement
     super(shoppingCartRepository);
     this.shoppingCartRepository = shoppingCartRepository;
     this.cartItemRepository = cartItemRepository;
+  }
+
+  async updateToCart(shopperId: string, data: UpdateCartReq): Promise<void> {
+    const cart = await this.shoppingCartRepository.findOne({
+      filter: {
+        shopperId: shopperId
+      },
+      relations: ['cartItems']
+    });
+
+    if (!cart) {
+      throw new Error('Cart not found');
+    }
+
+    //Delete all existing cartItem
+    await this.cartItemRepository.hardDelete({
+      filter: {
+        shoppingCartId: cart.id
+      }
+    });
+
+    //Add to cartItem
+    const cartItemsUpdate = data.items;
+
+    for (const item of cartItemsUpdate) {
+      const newCartItem = new CartItem();
+      newCartItem.shoppingCartId = cart.id;
+      newCartItem.productId = item.productId;
+      newCartItem.amount = item.amount;
+
+      await this.cartItemRepository.create({
+        data: newCartItem
+      });
+    }
+
+    return;
   }
 
   async getCartGroupByCreatedDate(shopperId: string): Promise<GetCartGroupByCreatedAt> {

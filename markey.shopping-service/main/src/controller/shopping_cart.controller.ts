@@ -71,6 +71,23 @@ export class ShoppingCartController {
   }
 
   /**
+   * * PUT /cart/update
+   * @param req
+   * @param res
+   * @param next
+   */
+  async updateToCart(req: Request, res: Response, next: NextFunction) {
+    try {
+      const shopper = SessionUtil.getShopperCurrentlyLoggedIn(req);
+
+      await this.shoppingCartService.updateToCart(shopper.id, req.body);
+      res.send_ok('Thêm sản phẩm vào giỏ hàng thành công');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * * GET /cart/me
    * @param req
    * @param res

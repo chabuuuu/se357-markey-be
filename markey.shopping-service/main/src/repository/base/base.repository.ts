@@ -46,6 +46,12 @@ export class BaseRepository<T extends ObjectLiteral> implements IBaseRepository<
     await this.ormRepository.save(recordToDelete);
   }
 
+  async hardDelete(options: { filter: Partial<T> }): Promise<void> {
+    const { filter } = options;
+
+    await this.ormRepository.delete(filter);
+  }
+
   async findOneAndHardDelete(options: { filter: Partial<T> }): Promise<void> {
     const { filter } = options;
     const recordToDelete = await this.ormRepository.findOne({
