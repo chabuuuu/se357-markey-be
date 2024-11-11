@@ -20,15 +20,12 @@ import { IsNull, Not } from 'typeorm';
 export class ProductController {
   public common: IBaseCrudController<Product>;
   private productService: IProductService<Product>;
-  private searchService: ISearchService;
   constructor(
     @inject('ProductService') productService: IProductService<Product>,
-    @inject(ITYPES.Controller) common: IBaseCrudController<Product>,
-    @inject('SearchService') searchService: ISearchService
+    @inject(ITYPES.Controller) common: IBaseCrudController<Product>
   ) {
     this.productService = productService;
     this.common = common;
-    this.searchService = searchService;
   }
 
   /**
