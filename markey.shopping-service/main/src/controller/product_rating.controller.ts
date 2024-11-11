@@ -87,4 +87,23 @@ export class ProductRatingController {
       next(error);
     }
   }
+
+  /**
+   * * GET /product-rating/have-rated
+   * * Get rating of the product by the shopper
+   */
+  async haveRated(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.productRatingService.findOne({
+        filter: {
+          shopperId: req.query.shopperId as string,
+          productId: req.query.productId as string
+        }
+      });
+
+      return res.send_ok('Found successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
