@@ -2,6 +2,7 @@ import { PagingDto } from '@/dto/paging.dto';
 import { DeleteResultType } from '@/types/delete-result.types';
 import { RecordOrderType } from '@/types/record-order.types';
 import { UpdateResultType } from '@/types/update-result.types';
+import { Index } from 'lunr';
 import { DeepPartial, FindOptionsSelect } from 'typeorm';
 
 export interface IBaseRepository<T> {
@@ -11,6 +12,13 @@ export interface IBaseRepository<T> {
    * @returns The saved record
    */
   save(data: T): Promise<T>;
+
+  /**
+   * Create a new record with the given data
+   * @param data
+   * @returns The created record
+   */
+  simpleCreate(payload: { data: DeepPartial<T> }): Promise<T>;
 
   /**
    * Create a new record with the given data
@@ -79,6 +87,13 @@ export interface IBaseRepository<T> {
    * @returns The number of records with given filter
    */
   count(options: { filter?: Partial<T> }): Promise<number>;
+
+  /**
+   * Count records by the given filter
+   * @param filter
+   * @returns The number of records with given filter
+   */
+  countWithSearchIndex(options: { filter?: Partial<T>; index?: Index; searchKey: string }): Promise<number>;
 
   /**
    * Check if a record exists with the given filter

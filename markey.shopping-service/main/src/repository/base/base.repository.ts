@@ -6,7 +6,9 @@ import { ITYPES } from '@/types/interface.types';
 import { RecordOrderType } from '@/types/record-order.types';
 import { UpdateResultType } from '@/types/update-result.types';
 import BaseError from '@/utils/error/base.error';
+import { normalizeTextUtil } from '@/utils/normalize-text.util';
 import { inject, injectable } from 'inversify';
+import { Index } from 'lunr';
 import 'reflect-metadata';
 import { DeepPartial, FindOptionsSelect, IsNull, ObjectLiteral, Repository } from 'typeorm';
 
@@ -31,6 +33,12 @@ export class BaseRepository<T extends ObjectLiteral> implements IBaseRepository<
   async create(payload: { data: DeepPartial<T> }): Promise<T> {
     const data = payload.data;
     const result = await this.ormRepository.save(data);
+    return result;
+  }
+
+  async simpleCreate(payload: { data: DeepPartial<T> }): Promise<T> {
+    const data = payload.data;
+    const result = this.ormRepository.create(data);
     return result;
   }
 
@@ -183,6 +191,51 @@ export class BaseRepository<T extends ObjectLiteral> implements IBaseRepository<
     return await this.ormRepository.count({
       where: filter
     });
+  }
+
+  async countWithSearchIndex(options: { filter?: Partial<T>; index?: Index; searchKey: string }): Promise<number> {
+    const { filter, index, searchKey } = options;
+
+    if (this.hasDeleteAtColumn()) {
+      if (filter && !filter.deleteAt) {
+        (filter as any).deleteAt = IsNull();
+      }
+
+      if (!filter) {
+        (filter as any) = {
+          deleteAt: IsNull()
+        };
+      }
+    }
+
+    let items = await this.ormRepository.find({
+      where: filter
+    });
+
+    if (!items) {
+      return 0;
+    }
+
+    if (index) {
+      const normalizedSearchTerm = normalizeTextUtil(searchKey);
+
+      const results = index!.search(normalizedSearchTerm);
+
+      console.log('results', results);
+
+      const afterSearchItems = new Array<any>();
+
+      for (const item of items) {
+        const found = results.find((r) => r.ref === item.id);
+        if (found) {
+          afterSearchItems.push(item);
+        }
+      }
+
+      items = afterSearchItems;
+    }
+
+    return items.length;
   }
 
   async exists(options: { filter: Partial<T> }): Promise<boolean> {

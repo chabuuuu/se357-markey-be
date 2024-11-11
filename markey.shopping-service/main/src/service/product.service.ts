@@ -1,3 +1,4 @@
+import { searchService } from '@/container/search.container';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
 import { CreateProductReq } from '@/dto/product/create-product.req';
@@ -10,8 +11,10 @@ import { IProductRepository } from '@/repository/interface/i.product.repository'
 import { IShopRepository } from '@/repository/interface/i.shop.repository';
 import { BaseCrudService } from '@/service/base/base.service';
 import { IProductService } from '@/service/interface/i.product.service';
+import { ISearchService } from '@/service/interface/i.search.service';
 import { RecordOrderType } from '@/types/record-order.types';
 import BaseError from '@/utils/error/base.error';
+import { normalizeTextUtil } from '@/utils/normalize-text.util';
 import { inject, injectable } from 'inversify';
 import { And, LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm';
 
@@ -37,13 +40,6 @@ export class ProductService extends BaseCrudService<Product> implements IProduct
       where = {
         ...where,
         ratingAverage: MoreThanOrEqual(filter.aboveRating)
-      };
-    }
-
-    if (filter.name) {
-      where = {
-        ...where,
-        name: Like(`%${filter.name}%`)
       };
     }
 
@@ -89,6 +85,13 @@ export class ProductService extends BaseCrudService<Product> implements IProduct
       });
     }
 
+    if (filter.name) {
+      where = {
+        ...where,
+        nameForSearch: Like(`%${normalizeTextUtil(filter.name)}%`)
+      };
+    }
+
     const products = await this.productRepository.findMany({
       filter: where,
       paging: paging,
@@ -97,9 +100,10 @@ export class ProductService extends BaseCrudService<Product> implements IProduct
       relations: ['category', 'shop']
     });
 
-    const totalRecords = await this.baseRepository.count({
+    const totalRecords = await this.productRepository.count({
       filter: where
     });
+
     return {
       items: products,
       total: totalRecords
@@ -121,12 +125,15 @@ export class ProductService extends BaseCrudService<Product> implements IProduct
       throw new BaseError(ErrorCode.PERMISSION_01, 'You are not the owner of this shop');
     }
 
+    (data as unknown as Product).nameForSearch = normalizeTextUtil(data.name);
+
     const product = await this.productRepository.create({
       data: {
         ...data,
         shopId: shop.id
       }
     });
+
     return product;
   }
 }
