@@ -15,6 +15,6 @@ productRouter
   .get('/recommend', productController.recommend.bind(productController))
   .get('/:id', productController.findOne.bind(productController))
   .get('/', productController.findAll.bind(productController))
-  .put('/:id', classValidate(UpdateProductReq), productController.common.update.bind(productController.common))
-  .delete('/:id', productController.common.delete.bind(productController.common));
+  .put('/:id', classValidate(UpdateProductReq), productController.update.bind(productController))
+  .delete('/:id', productController.delete.bind(productController));
 export default productRouter;

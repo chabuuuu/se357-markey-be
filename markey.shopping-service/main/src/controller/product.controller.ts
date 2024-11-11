@@ -3,12 +3,15 @@ import { PagingDto } from '@/dto/paging.dto';
 import { CreateProductReq } from '@/dto/product/create-product.req';
 import { FindProductReq } from '@/dto/product/find-product.req';
 import { ListProductSelect } from '@/dto/product/list-product.select';
+import { UpdateProductReq } from '@/dto/product/update-product.req';
 import { RoleNameEnum } from '@/enums/role-name.enum';
 import { Product } from '@/models/product.model';
 import { IProductService } from '@/service/interface/i.product.service';
+import { ISearchService } from '@/service/interface/i.search.service';
 import { ITYPES } from '@/types/interface.types';
 import { convertToDto } from '@/utils/dto-convert/convert-to-dto.util';
 import { getPagingUtil } from '@/utils/get-paging.util';
+import { normalizeTextUtil } from '@/utils/normalize-text.util';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { IsNull, Not } from 'typeorm';
@@ -17,12 +20,15 @@ import { IsNull, Not } from 'typeorm';
 export class ProductController {
   public common: IBaseCrudController<Product>;
   private productService: IProductService<Product>;
+  private searchService: ISearchService;
   constructor(
     @inject('ProductService') productService: IProductService<Product>,
-    @inject(ITYPES.Controller) common: IBaseCrudController<Product>
+    @inject(ITYPES.Controller) common: IBaseCrudController<Product>,
+    @inject('SearchService') searchService: ISearchService
   ) {
     this.productService = productService;
     this.common = common;
+    this.searchService = searchService;
   }
 
   /**
@@ -192,6 +198,50 @@ export class ProductController {
       };
 
       return res.send_ok('Found successfully', resultWithPaging);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * PUT /product/:id
+   */
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data: UpdateProductReq = req.body;
+      const id = req.params.id;
+
+      if (data.name) {
+        (data as unknown as Product).nameForSearch = normalizeTextUtil(data.name);
+      }
+
+      const result = await this.productService.findOneAndUpdate({
+        filter: {
+          id: id
+        },
+        updateData: data
+      });
+
+      return res.send_ok('Updated successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * * DELETE /product/:id
+   */
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = req.params.id;
+
+      await this.productService.findOneAndDelete({
+        filter: {
+          id: id
+        }
+      });
+
+      return res.send_ok('Deleted successfully');
     } catch (error) {
       next(error);
     }

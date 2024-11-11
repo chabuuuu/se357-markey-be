@@ -1,8 +1,18 @@
 import { Category } from '@/models/category.model';
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  BeforeInsert,
+  BeforeUpdate
+} from 'typeorm';
 import { BaseEntity } from '@/models/base_model.model';
 import { Shop } from '@/models/shop.model';
 import { ProductRating } from '@/models/product_rating.model';
+import { normalizeTextUtil } from '@/utils/normalize-text.util';
 
 @Entity('products')
 export class Product extends BaseEntity {
@@ -15,6 +25,14 @@ export class Product extends BaseEntity {
     nullable: false
   })
   name!: string;
+
+  @Column({
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+    name: 'name_for_search'
+  })
+  nameForSearch?: string;
 
   @Column({
     type: 'text',

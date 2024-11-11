@@ -7,6 +7,8 @@ import { IProductRepository } from '@/repository/interface/i.product.repository'
 import { BaseContainer } from '@/container/base.container';
 import { IShopRepository } from '@/repository/interface/i.shop.repository';
 import { shopRepository } from '@/container/shop.container';
+import { ISearchService } from '@/service/interface/i.search.service';
+import { searchService } from '@/container/search.container';
 
 class ProductContainer extends BaseContainer {
   constructor() {
