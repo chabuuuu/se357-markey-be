@@ -1,3 +1,4 @@
+import { JwtClaimDto } from '@/dto/jwt-claim.dto';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
 import { CreatePostReq } from '@/dto/post/create-post.req';
@@ -28,6 +29,24 @@ export class PostService extends BaseCrudService<Post> implements IPostService<P
     this.postRepository = postRepository;
     this.shopRepository = shopRepository;
   }
+
+  async canDeletePostOrNot(user: JwtClaimDto, postId: string): Promise<void> {
+    if (user.roleName !== 'salesman') {
+      throw new BaseError(ErrorCode.AUTH_01, 'You are not allowed to delete post');
+    }
+    const post = await this.postRepository.findOne({
+      filter: {
+        id: postId
+      }
+    });
+    if (!post) {
+      throw new BaseError(ErrorCode.NF_01, 'Post not found');
+    }
+    if (post.shopId !== user.shopId) {
+      throw new BaseError(ErrorCode.AUTH_01, 'You are not allowed to delete post');
+    }
+  }
+
   async findWithFilter(filter: SearchPostReq, paging: PagingDto): Promise<PagingResponseDto<Post>> {
     let where = {};
     const sort: RecordOrderType[] = [];

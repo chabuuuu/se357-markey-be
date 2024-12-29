@@ -13,6 +13,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsStrongPassword,
   MaxLength,
   ValidationError
 } from 'class-validator';
@@ -20,6 +21,7 @@ import {
 export class SalesmanRegisterReq {
   @IsNotEmpty()
   @IsString()
+  @IsStrongPassword()
   @Expose()
   password!: string;
 

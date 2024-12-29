@@ -1,4 +1,5 @@
 import { searchService } from '@/container/search.container';
+import { JwtClaimDto } from '@/dto/jwt-claim.dto';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
 import { PagingDto } from '@/dto/paging.dto';
 import { CreateProductReq } from '@/dto/product/create-product.req';
@@ -30,6 +31,19 @@ export class ProductService extends BaseCrudService<Product> implements IProduct
     super(productRepository);
     this.productRepository = productRepository;
     this.shopRepository = shopRepository;
+  }
+
+  async canDeleteOrNot(user: JwtClaimDto, productId: string): Promise<void> {
+    if (user.roleName !== 'salesman') {
+      throw new BaseError(ErrorCode.AUTH_01, 'You are not allowed to delete product');
+    }
+    const product = await this.productRepository.findOne({ filter: { id: productId } });
+    if (!product) {
+      throw new BaseError(ErrorCode.NF_01, 'Product not found');
+    }
+    if (product.shopId !== user.shopId) {
+      throw new BaseError(ErrorCode.AUTH_01, 'You are not allowed to delete product');
+    }
   }
 
   async findWithFilter(filter: FindProductReq, paging: PagingDto): Promise<PagingResponseDto<Product>> {

@@ -49,6 +49,7 @@ export class CategoryController {
    * DELETE /categories/:id
    */
   async delete(req: Request, res: Response, next: NextFunction) {
+    await this.categoryService.canDeleteOrNot(req.user!, req.params.id);
     return this.common.delete(req, res, next);
   }
 

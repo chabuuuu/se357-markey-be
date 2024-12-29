@@ -16,5 +16,5 @@ productRouter
   .get('/:id', productController.findOne.bind(productController))
   .get('/', productController.findAll.bind(productController))
   .put('/:id', classValidate(UpdateProductReq), productController.update.bind(productController))
-  .delete('/:id', productController.delete.bind(productController));
+  .delete('/:id', authenticateJWT, productController.delete.bind(productController));
 export default productRouter;

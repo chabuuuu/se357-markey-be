@@ -230,11 +230,13 @@ export class ProductController {
    */
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = req.params.id;
+      const productId = req.params.id;
+
+      await this.productService.canDeleteOrNot(req.user!, productId);
 
       await this.productService.findOneAndDelete({
         filter: {
-          id: id
+          id: productId
         }
       });
 
