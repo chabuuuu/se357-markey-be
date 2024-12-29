@@ -1,6 +1,8 @@
+import { PERMISSIONS } from '@/constants/permission.constants';
 import { categoryController } from '@/container/category.container';
 import { CreateCategoryReq } from '@/dto/category/create-category.req';
 import { UpdateCategoryReq } from '@/dto/category/update-category.req';
+import { checkPermission } from '@/middleware/check-permission.middleware';
 import { classValidate } from '@/middleware/class-validate.middleware';
 import express from 'express';
 const categoryRouter = express.Router();

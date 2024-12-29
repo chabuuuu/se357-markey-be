@@ -138,6 +138,8 @@ export class PostController {
       const salesman = SessionUtil.getSalesmanCurrentlyLoggedIn(req);
       const salesmanId = salesman.id;
 
+      await this.postService.canDeletePostOrNot(salesman, postId);
+
       await this.postService.deletePostById(salesmanId, postId);
 
       return res.send_ok('Deleted successfully');

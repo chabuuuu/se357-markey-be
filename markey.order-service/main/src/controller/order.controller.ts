@@ -2,6 +2,7 @@ import { IBaseCrudController } from '@/controller/interfaces/i.base-curd.control
 import { FindOrderWithFilterReq } from '@/dto/order/find-order-with-filter.req';
 import { UpdateOrderStatus } from '@/dto/order/update-status-order.req';
 import { OrderStatusEnum } from '@/enums/order-status.enum';
+import { RoleNameEnum } from '@/enums/role-name.enum';
 import { Order } from '@/models/order.model';
 import { IOrderService } from '@/service/interface/i.order.service';
 import { ITYPES } from '@/types/interface.types';
@@ -107,8 +108,11 @@ export class OrderController {
   async changeOrderStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const data: UpdateOrderStatus = req.body;
-      const status = getEnumValue(OrderStatusEnum, data.status);
       const orderId = req.params.id;
+      const status = getEnumValue(OrderStatusEnum, data.status);
+      if (status === OrderStatusEnum.APPROVED_AND_PREPARING_FOR_DELIVERY) {
+        await this.orderService.checkForApproveOrder(req.user!, orderId);
+      }
       await this.orderService.findOneAndUpdate({
         filter: {
           id: orderId
