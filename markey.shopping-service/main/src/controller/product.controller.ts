@@ -169,32 +169,11 @@ export class ProductController {
   async recommend(req: Request, res: Response, next: NextFunction) {
     try {
       const paging = getPagingUtil(req);
-      const result = await this.productService.findMany({
-        paging: paging,
-        relations: ['category', 'shop'],
-        filter: {
-          ratingAverage: Not(IsNull()) as any
-        },
-        select: ListProductSelect,
-        order: [
-          {
-            column: 'ratingAverage',
-            direction: 'DESC'
-          }
-        ]
-      });
+      const user = req.user;
 
-      const totalRecords = await this.productService.count({
-        filter: {
-          ratingAverage: Not(IsNull()) as any
-        }
-      });
-      const resultWithPaging = {
-        items: result,
-        total: totalRecords
-      };
+      const result = await this.productService.getRecommendProducts(paging, user);
 
-      return res.send_ok('Found successfully', resultWithPaging);
+      return res.send_ok('Found successfully', result);
     } catch (error) {
       next(error);
     }

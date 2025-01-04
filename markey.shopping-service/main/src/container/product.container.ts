@@ -9,6 +9,8 @@ import { IShopRepository } from '@/repository/interface/i.shop.repository';
 import { shopRepository } from '@/container/shop.container';
 import { ISearchService } from '@/service/interface/i.search.service';
 import { searchService } from '@/container/search.container';
+import { IRecommendRepository } from '@/repository/interface/i.recommend.repository';
+import { recommendRepository } from '@/container/recommend.container';
 
 class ProductContainer extends BaseContainer {
   constructor() {
@@ -19,6 +21,7 @@ class ProductContainer extends BaseContainer {
 
     //Import
     this.container.bind<IShopRepository<any>>('ShopRepository').toConstantValue(shopRepository);
+    this.container.bind<IRecommendRepository<any>>('RecommendRepository').toConstantValue(recommendRepository);
   }
 
   export() {
