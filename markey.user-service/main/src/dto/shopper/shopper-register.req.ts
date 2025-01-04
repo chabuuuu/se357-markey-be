@@ -1,7 +1,16 @@
 import { ExposeAll } from '@/decorators/expose-all.decorator';
 import { IsNotEmptyAll } from '@/decorators/is-not-empty-all.decorator';
 import { Expose } from 'class-transformer';
-import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
+import {
+  IsDateString,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+  IsStrongPassword,
+  MaxLength
+} from 'class-validator';
 
 @IsNotEmptyAll
 export class ShopperRegisterReq {
@@ -12,6 +21,7 @@ export class ShopperRegisterReq {
   username?: string;
 
   @IsString()
+  @IsStrongPassword()
   @Expose()
   password!: string;
 

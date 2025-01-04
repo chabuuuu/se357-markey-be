@@ -9,7 +9,12 @@ const orderRouter = express.Router();
 
 orderRouter
 
-  .put('/status/:id', classValidate(UpdateOrderStatus), orderController.changeOrderStatus.bind(orderController))
+  .put(
+    '/status/:id',
+    authenticateJWT,
+    classValidate(UpdateOrderStatus),
+    orderController.changeOrderStatus.bind(orderController)
+  )
 
   .put('/send-paid-event', orderController.handlePaidEvent.bind(orderController))
 

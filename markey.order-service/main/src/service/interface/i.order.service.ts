@@ -1,3 +1,4 @@
+import { JwtClaimDto } from '@/dto/jwt-claim.dto';
 import { CreateOrderReq } from '@/dto/order/create-order.req';
 import { FindOrderWithFilterReq } from '@/dto/order/find-order-with-filter.req';
 import { PagingResponseDto } from '@/dto/paging-response.dto';
@@ -8,6 +9,7 @@ import { IBaseCrudService } from '@/service/interface/i.base.service';
 import { BaseModelType } from '@/types/base-model.types';
 
 export interface IOrderService<T extends BaseModelType> extends IBaseCrudService<T> {
+  checkForApproveOrder(user: JwtClaimDto, orderId: string): Promise<void>;
   /**
    * * Find order with filter
    * @param data

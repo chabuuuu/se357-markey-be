@@ -1,3 +1,4 @@
+import { JwtClaimDto } from '@/dto/jwt-claim.dto';
 import { CreateOrderReq } from '@/dto/order/create-order.req';
 import { FindOrderWithFilterReq } from '@/dto/order/find-order-with-filter.req';
 import { FindOrderWithFilterSelect } from '@/dto/order/find-order-with-filter.select';
@@ -6,8 +7,10 @@ import { PagingDto } from '@/dto/paging.dto';
 import { CreatePaymentReq } from '@/dto/payment/create-payment.req';
 import { PaymentCreatedEventDto } from '@/dto/payment/payment-created-event.dto';
 import { ProductDto } from '@/dto/product.dto';
+import { ErrorCode } from '@/enums/error-code.enums';
 import { OrderStatusEnum } from '@/enums/order-status.enum';
 import { PaymentMethodEnum } from '@/enums/payment-method.enum';
+import { RoleNameEnum } from '@/enums/role-name.enum';
 import { Order } from '@/models/order.model';
 import { OrderItem } from '@/models/order_item.model';
 import { ICartRepository } from '@/repository/interface/i.cart.repository';
@@ -16,6 +19,7 @@ import { IPaymentRepository } from '@/repository/interface/i.payment.repository'
 import { BaseCrudService } from '@/service/base/base.service';
 import { IOrderService } from '@/service/interface/i.order.service';
 import { RecordOrderType } from '@/types/record-order.types';
+import BaseError from '@/utils/error/base.error';
 import { getEnumValue } from '@/utils/get-enum-value.util';
 import { inject, injectable } from 'inversify';
 import { LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm';
@@ -36,6 +40,21 @@ export class OrderService extends BaseCrudService<Order> implements IOrderServic
     this.cartRepository = cartRepository;
     this.paymentRepository = paymentRepository;
   }
+
+  async checkForApproveOrder(user: JwtClaimDto, orderId: string): Promise<void> {
+    if (user.roleName !== RoleNameEnum.salesman) {
+      throw new BaseError(ErrorCode.AUTH_01, 'You are not allowed to approve order');
+    }
+    const order = await this.orderRepository.findOne({
+      filter: {
+        id: orderId
+      }
+    });
+    if (order?.shopId !== user.shopId) {
+      throw new BaseError(ErrorCode.AUTH_01, 'You are not allowed to approve order');
+    }
+  }
+
   /**
    * * Find order with filter
    * @param filter
